@@ -1,0 +1,10 @@
+#
+# MorphOS makefile
+#
+
+CFLAGS=`sdl-config --cflags`
+PREFIX=../morphos/
+SUFFIX=
+LIBS=`sdl-config --libs`
+
+include makefile.common

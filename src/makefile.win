@@ -1,0 +1,24 @@
+#
+# Win32 makefile
+#
+
+PREFIX=../win32/
+SUFFIX=.exe
+LIBS=-lmingw32 -lSDLmain -lSDL -mwindows -static-libstdc++ -static-libgcc
+RM=	-del
+
+include makefile.common
+
+$(PREFIX)goattrk2$(SUFFIX): goatdata.o goattrk2.o gsong.o gorder.o gpattern.o ginstr.o gtable.o gplay.o gdisplay.o \
+gfile.o greloc.o ghelp.o gsound.o gconsole.o gsid.o \
+resid/envelope.o resid/extfilt.o resid/filter.o resid/pot.o resid/sid.o resid/wave.o resid/wave6581__ST.o \
+resid/wave6581_P_T.o resid/wave6581_PS_.o resid/wave6581_PST.o resid/wave8580__ST.o resid/wave8580_P_T.o \
+resid/wave8580_PS_.o resid/wave8580_PST.o resid/voice.o \
+resid-fp/envelopefp.o resid-fp/extfiltfp.o resid-fp/filterfp.o resid-fp/potfp.o resid-fp/sidfp.o \
+resid-fp/wavefp.o resid-fp/voicefp.o \
+asm/asmtab.o asm/chnkpool.o asm/expr.o asm/lexyy.o asm/log.o asm/membuf.o asm/membufio.o asm/namedbuf.o asm/parse.o \
+asm/pc.o asm/vec.o \
+bme/bme_gfx.o bme/bme_snd.o bme/bme_win.o bme/bme_mou.o bme/bme_kbd.o bme/bme_io.o bme/bme_end.o bme/bme.o
+	windres goattrk2.rc goaticon.o
+	$(CXX) -o $@ $^ goaticon.o $(LIBS)
+	strip $@

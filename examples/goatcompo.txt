@@ -1,0 +1,11 @@
+Goatcompo examplesongs & commandline parameters
+-----------------------------------------------
+
+Randall: I'll Be A Pimp In Cabrini Green.. (cabrinigreen.sng)  /e1 /s1 /a0ff0
+Richard Bayliss: Everlasting Annoyance     (everlasting.sng)   /e0 /s1 /a0f00
+Hein: GhostTrackers	                       (ghosttrackers.sng) /e0 /s1 /a0f00
+Jammer: My Own Hyperspace                  (hyperspace.sng)    /e1 /s1 /a0ff0
+Cadaver: On A Sanction From CIA            (sanction.sng)      /e0 /s1 /a0f00
+No-XS: Sixpack Of Cola *                   (sixpack.sng)       /e0 /s1 /a0f00
+
+* = based on an original song by beek
