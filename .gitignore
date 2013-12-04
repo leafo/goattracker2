@@ -1,0 +1,7 @@
+*.o
+*.dat
+linux/
+src/goatdata.c
+src/bme/dat2inc
+src/bme/datafile
+
