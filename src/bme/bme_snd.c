@@ -6,6 +6,9 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <jack/jack.h>
+#include <jack/transport.h>
+
 #include <SDL/SDL.h>
 #include "bme_main.h"
 #include "bme_cfg.h"
@@ -13,10 +16,16 @@
 #include "bme_io.h"
 #include "bme_err.h"
 
+typedef jack_default_audio_sample_t sample_t;
+
 // Prototypes
 int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned channels, int usedirectsound);
 void snd_uninit(void);
 void snd_setcustommixer(void (*custommixer)(Sint32 *dest, unsigned samples));
+
+
+static int snd_initchannels(unsigned channels);
+
 static int snd_initmixer(void);
 static void snd_uninitmixer(void);
 static void snd_mixdata(Uint8 *dest, unsigned bytes);
@@ -26,6 +35,7 @@ static void snd_mixer(void *userdata, Uint8 *stream, int len);
 // Lowlevel mixing functions
 static void snd_clearclipbuffer(Sint32 *clipbuffer, unsigned clipsamples);
 static void snd_mixchannel(CHANNEL *chptr, Sint32 *dest, unsigned samples);
+static void snd_float_postprocess(Sint32 *src, sample_t* dest, unsigned samples);
 static void snd_16bit_postprocess(Sint32 *src, Sint16 *dest, unsigned samples);
 static void snd_8bit_postprocess(Sint32 *src, Uint8 *dest, unsigned samples);
 
@@ -47,9 +57,69 @@ static Sint32 *snd_clipbuffer = NULL;
 static SDL_AudioSpec desired;
 static SDL_AudioSpec obtained;
 
+static int use_jack = 1;
+
+static jack_client_t* client;
+static jack_port_t* output_port;
+
+int snd_jack_process(jack_nframes_t nframes, void *arg) {
+    sample_t* buffer = jack_port_get_buffer(output_port, nframes);
+    snd_mixdata((Uint8*)buffer, sizeof(sample_t) * nframes);
+    return 0;
+}
+
+int snd_init_jack() {
+    snd_uninit();
+
+    jack_status_t status;
+
+    client = jack_client_open("goattracker2", JackNoStartServer, &status);
+    if (client == 0) {
+        fprintf(stderr, "failed to create jack client\n");
+        return BME_ERROR;
+    }
+
+    snd_mixrate = jack_get_sample_rate(client);
+
+    snd_bpmcount = 0;
+    snd_sndinitted = 1;
+
+    snd_mixmode = 0;
+    snd_samplesize = 1;
+
+    // force 16 bit
+    snd_mixmode |= SIXTEENBIT;
+    snd_samplesize <<= 1;
+
+    snd_buffersize = 1880;
+
+    if (!snd_initmixer())
+    {
+        bme_error = BME_OUT_OF_MEMORY;
+        snd_uninit();
+        return BME_ERROR;
+    }
+
+    jack_set_process_callback(client, snd_jack_process, 0);
+
+    output_port = jack_port_register(client, "playback",
+            JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+
+    if (jack_activate(client)) {
+        fprintf(stderr, "failed to activate\n");
+        return BME_ERROR;
+    }
+
+    bme_error = BME_OK;
+    return BME_OK;
+}
+
 int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned channels, int usedirectsound)
 {
-    int c;
+
+    if (use_jack) {
+        return snd_init_jack();
+    }
 
     // Register snd_uninit as an atexit function
 
@@ -101,36 +171,8 @@ int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned
     snd_bpmcount = 0;
 
     // (Re)allocate channels if necessary
-
-    if (snd_previouschannels != channels)
-    {
-        CHANNEL *chptr;
-        if (snd_channel)
-        {
-            free(snd_channel);
-            snd_channel = NULL;
-            snd_channels = 0;
-        }
-
-        snd_channel = malloc(channels * sizeof(CHANNEL));
-        if (!snd_channel)
-        {
-            bme_error = BME_OUT_OF_MEMORY;
-            snd_uninit();
-            return BME_ERROR;
-        }
-        chptr = &snd_channel[0];
-        snd_channels = channels;
-        snd_previouschannels = channels;
-
-        // Init all channels (no sound played, no sample, mastervolume 64)
-        for (c = snd_channels; c > 0; c--)
-        {
-            chptr->voicemode = VM_OFF;
-            chptr->smp = NULL;
-            chptr->mastervol = 64;
-            chptr++;
-        }
+    if (snd_initchannels(channels) != BME_OK) {
+        return BME_ERROR;
     }
 
     SDL_PauseAudio(1);
@@ -175,9 +217,47 @@ int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned
     return BME_OK;
 }
 
+int snd_initchannels(unsigned channels) {
+    int c;
+
+    if (snd_previouschannels != channels)
+    {
+        CHANNEL *chptr;
+        if (snd_channel)
+        {
+            free(snd_channel);
+            snd_channel = NULL;
+            snd_channels = 0;
+        }
+
+        snd_channel = malloc(channels * sizeof(CHANNEL));
+        if (!snd_channel)
+        {
+            bme_error = BME_OUT_OF_MEMORY;
+            snd_uninit();
+            return BME_ERROR;
+        }
+        chptr = &snd_channel[0];
+        snd_channels = channels;
+        snd_previouschannels = channels;
+
+        // Init all channels (no sound played, no sample, mastervolume 64)
+        for (c = snd_channels; c > 0; c--)
+        {
+            chptr->voicemode = VM_OFF;
+            chptr->smp = NULL;
+            chptr->mastervol = 64;
+            chptr++;
+        }
+    }
+
+    return BME_OK;
+}
+
+
 void snd_uninit(void)
 {
-    if (snd_sndinitted)
+    if (!use_jack && snd_sndinitted)
     {
         SDL_CloseAudio();
         snd_sndinitted = 0;
@@ -232,7 +312,14 @@ static void snd_mixdata(Uint8 *dest, unsigned bytes)
         clipsamples >>= 1;
         mixsamples >>= 1;
     }
+
+    if (use_jack) {
+        clipsamples = bytes / sizeof(sample_t);
+        mixsamples = clipsamples;
+    }
+
     snd_clearclipbuffer(snd_clipbuffer, clipsamples);
+
     if (snd_player) // Must the player be called?
     {
         int musicsamples;
@@ -276,7 +363,12 @@ static void snd_mixdata(Uint8 *dest, unsigned bytes)
     }
 
     clipptr = (Sint32 *)snd_clipbuffer;
-    if (snd_mixmode & SIXTEENBIT)
+
+    if (use_jack)
+    {
+        snd_float_postprocess(clipptr, (sample_t*)dest, clipsamples);
+    }
+    else if (snd_mixmode & SIXTEENBIT)
     {
         snd_16bit_postprocess(clipptr, (Sint16 *)dest, clipsamples);
     }
@@ -301,6 +393,16 @@ static void snd_mixchannels(Sint32 *dest, unsigned samples)
 static void snd_clearclipbuffer(Sint32 *clipbuffer, unsigned clipsamples)
 {
     memset(clipbuffer, 0, clipsamples*sizeof(int));
+}
+
+static void snd_float_postprocess(Sint32* src, sample_t* dest, unsigned samples) {
+    while (samples--)
+    {
+        int sample = *src++;
+        if (sample > 32767) sample = 32767;
+        if (sample < -32768) sample = -32768;
+        *dest++ = sample / 32768.0;
+    }
 }
 
 static void snd_16bit_postprocess(Sint32 *src, Sint16 *dest, unsigned samples)
