@@ -8,6 +8,7 @@
 
 #include <jack/jack.h>
 #include <jack/transport.h>
+#include <jack/midiport.h>
 
 #include <SDL/SDL.h>
 #include "bme_main.h"
@@ -61,8 +62,42 @@ static int use_jack = 1;
 
 static jack_client_t* client;
 static jack_port_t* output_port;
+static jack_port_t* midi_input_port;
+
+extern void playtestnote(int note, int ins, int chnnum);
+
+extern int einum;
+extern int epchn;
+
+int current_note_on = -1;
 
 int snd_jack_process(jack_nframes_t nframes, void *arg) {
+    // poll for midi events
+    int i;
+    jack_midi_event_t event;
+    void* midi_buffer = jack_port_get_buffer(midi_input_port, nframes);
+    int num_events = jack_midi_get_event_count(midi_buffer);
+
+    for (i = 0; i < num_events; i++) {
+        jack_midi_event_get(&event, midi_buffer, i);
+        // printf("size: %u: %u %u %u\n", event.size,
+        //     *event.buffer, *(event.buffer+1), *(event.buffer+2));
+
+        if ((*event.buffer & 0xf0) == 0x90) {
+            // note on
+            unsigned char note = *(event.buffer + 1);
+            current_note_on = note;
+            playtestnote(note + 72, einum, epchn);
+        } else if ((*event.buffer & 0xf0) == 0x80) {
+            // note off
+            unsigned char note = *(event.buffer + 1);
+            if (note == current_note_on) {
+                playtestnote(190, einum, epchn);
+                current_note_on = -1;
+            }
+        }
+    }
+
     sample_t* buffer = jack_port_get_buffer(output_port, nframes);
     snd_mixdata((Uint8*)buffer, sizeof(sample_t) * nframes);
     return 0;
@@ -103,7 +138,10 @@ int snd_init_jack() {
     jack_set_process_callback(client, snd_jack_process, 0);
 
     output_port = jack_port_register(client, "playback",
-            JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+        JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+
+    midi_input_port = jack_port_register(client, "midi_in",
+        JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
 
     if (jack_activate(client)) {
         fprintf(stderr, "failed to activate\n");
@@ -160,7 +198,7 @@ int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned
             if (!desired.samples) break;
             bits++;
         }
-        desired.samples = 1 << bits;    
+        desired.samples = 1 << bits;
     }
 
     desired.callback = snd_mixer;
