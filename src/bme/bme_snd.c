@@ -59,6 +59,7 @@ static SDL_AudioSpec desired;
 static SDL_AudioSpec obtained;
 
 static int use_jack = 1;
+static int use_jack_audio = 0;
 
 static jack_client_t* client;
 static jack_port_t* output_port;
@@ -98,8 +99,10 @@ int snd_jack_process(jack_nframes_t nframes, void *arg) {
         }
     }
 
-    sample_t* buffer = jack_port_get_buffer(output_port, nframes);
-    snd_mixdata((Uint8*)buffer, sizeof(sample_t) * nframes);
+	if (use_jack_audio) {
+		sample_t* buffer = jack_port_get_buffer(output_port, nframes);
+		snd_mixdata((Uint8*)buffer, sizeof(sample_t) * nframes);
+	}
     return 0;
 }
 
@@ -114,31 +117,36 @@ int snd_init_jack() {
         return BME_ERROR;
     }
 
-    snd_mixrate = jack_get_sample_rate(client);
+	if (use_jack_audio) {
+		snd_mixrate = jack_get_sample_rate(client);
 
-    snd_bpmcount = 0;
-    snd_sndinitted = 1;
+		snd_bpmcount = 0;
+		snd_sndinitted = 1;
 
-    snd_mixmode = 0;
-    snd_samplesize = 1;
+		snd_mixmode = 0;
+		snd_samplesize = 1;
 
-    // force 16 bit
-    snd_mixmode |= SIXTEENBIT;
-    snd_samplesize <<= 1;
+		// force 16 bit
+		snd_mixmode |= SIXTEENBIT;
+		snd_samplesize <<= 1;
 
-    snd_buffersize = 1880;
+		snd_buffersize = 1880;
 
-    if (!snd_initmixer())
-    {
-        bme_error = BME_OUT_OF_MEMORY;
-        snd_uninit();
-        return BME_ERROR;
-    }
+		if (!snd_initmixer())
+		{
+			bme_error = BME_OUT_OF_MEMORY;
+			snd_uninit();
+			return BME_ERROR;
+		}
+	}
+
 
     jack_set_process_callback(client, snd_jack_process, 0);
 
-    output_port = jack_port_register(client, "playback",
-        JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+	if (use_jack_audio) {
+		output_port = jack_port_register(client, "playback",
+			JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+	}
 
     midi_input_port = jack_port_register(client, "midi_in",
         JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
@@ -154,9 +162,9 @@ int snd_init_jack() {
 
 int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned channels, int usedirectsound)
 {
-
     if (use_jack) {
-        return snd_init_jack();
+        snd_init_jack();
+		if (use_jack_audio) return BME_OK;
     }
 
     // Register snd_uninit as an atexit function
@@ -295,7 +303,7 @@ int snd_initchannels(unsigned channels) {
 
 void snd_uninit(void)
 {
-    if (!use_jack && snd_sndinitted)
+    if (!use_jack_audio && snd_sndinitted)
     {
         SDL_CloseAudio();
         snd_sndinitted = 0;
@@ -351,7 +359,7 @@ static void snd_mixdata(Uint8 *dest, unsigned bytes)
         mixsamples >>= 1;
     }
 
-    if (use_jack) {
+    if (use_jack_audio) {
         clipsamples = bytes / sizeof(sample_t);
         mixsamples = clipsamples;
     }
@@ -402,7 +410,7 @@ static void snd_mixdata(Uint8 *dest, unsigned bytes)
 
     clipptr = (Sint32 *)snd_clipbuffer;
 
-    if (use_jack)
+    if (use_jack_audio)
     {
         snd_float_postprocess(clipptr, (sample_t*)dest, clipsamples);
     }
