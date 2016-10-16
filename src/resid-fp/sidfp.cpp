@@ -341,7 +341,7 @@ bool SIDFP::set_sampling_parameters(double clock_freq, sampling_method method,
   cycles_per_sample = static_cast<float>(clock_freq / sample_freq);
 
   // FIR initialization is only necessary for resampling.
-  if (method != SAMPLE_RESAMPLE_INTERPOLATE)
+  if (method != SAMPLE_RESAMPLE_FASTMEM)
   {
     sampling = method;
 
@@ -524,7 +524,7 @@ int SIDFP::clock(cycle_count& delta_t, short* buf, int n, int interleave)
   case SAMPLE_INTERPOLATE:
     res = clock_interpolate(delta_t, buf, n, interleave);
     break;
-  case SAMPLE_RESAMPLE_INTERPOLATE:
+  case SAMPLE_RESAMPLE_FASTMEM:
     res = clock_resample_interpolate(delta_t, buf, n, interleave);
     break;
   }

@@ -17,20 +17,15 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  ---------------------------------------------------------------------------
 
-#ifndef RESID_POT_H
-#define RESID_POT_H
-
-#include "resid-config.h"
+#include "pot.h"
 
 namespace reSID
 {
 
-class Potentiometer
+reg8 Potentiometer::readPOT()
 {
-public:
-  reg8 readPOT();
-};
+  // NB! Not modeled.
+  return 0xff;
+}
 
 } // namespace reSID
-
-#endif

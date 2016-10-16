@@ -29,7 +29,7 @@ unsigned char altsidorder[] =
    0x0b,0x07,0x08,0x09,0x0a,0x0c,0x0d,
    0x12,0x0e,0x0f,0x10,0x11,0x13,0x14};
 
-SID *sid = 0;
+reSID::SID *sid = 0;
 SIDFP *sidfp = 0;
 
 FILTERPARAMS filterparams =
@@ -61,7 +61,7 @@ void sid_init(int speed, unsigned m, unsigned ntsc, unsigned interpolate, unsign
       sidfp = NULL;
     }
 
-    if (!sid) sid = new SID;
+    if (!sid) sid = new reSID::SID;
   }
   else
   {
@@ -83,7 +83,7 @@ void sid_init(int speed, unsigned m, unsigned ntsc, unsigned interpolate, unsign
 
     default:
     if (sid) sid->set_sampling_parameters(clockrate, SAMPLE_INTERPOLATE, speed);
-    if (sidfp) sidfp->set_sampling_parameters(clockrate, SAMPLE_RESAMPLE_INTERPOLATE, speed);
+    if (sidfp) sidfp->set_sampling_parameters(clockrate, SAMPLE_RESAMPLE_FASTMEM, speed);
     break;
   }
 
