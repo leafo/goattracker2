@@ -1,5 +1,5 @@
 //
-// GOATTRACKER v2.72
+// GOATTRACKER v2.73
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -76,14 +76,46 @@ char instrfilter[MAX_FILENAME];
 char instrpath[MAX_PATHNAME];
 char packedpath[MAX_PATHNAME];
 
-char *programname = "$VER: GoatTracker v2.72";
-                                      
+char *programname = "$VER: GoatTracker v2.73";
+
 char textbuffer[MAX_PATHNAME];
 
 unsigned char hexkeytbl[] = {'0', '1', '2', '3', '4', '5', '6', '7',
   '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
 extern unsigned char datafile[];
+
+char* usage[] = {
+    "Usage: goattrk2 [songname] [options]",
+    "Options:",
+    "-Axx Set ADSR parameter for hardrestart in hex. DEFAULT=0F00",
+    "-Bxx Set sound buffer length in milliseconds DEFAULT=100",
+    "-Cxx Use CatWeasel MK3 PCI SID (0 = off, 1 = on)",
+    "-Dxx Pattern row display (0 = decimal, 1 = hexadecimal)",
+    "-Exx Set emulated SID model (0 = 6581 1 = 8580) DEFAULT=6581",
+    "-Fxx Set custom SID clock cycles per second (0 = use PAL/NTSC default)",
+    "-Gxx Set pitch of A-4 in Hz (0 = use default frequencytable, close to 440Hz)",
+    "-Hxx Use HardSID (0 = off, 1 = HardSID ID0 2 = HardSID ID1 etc.)",
+    "-Ixx Set reSID interpolation (0 = off, 1 = on, 2 = distortion, 3 = distortion & on) DEFAULT=off",
+    "-Kxx Note-entry mode (0 = PROTRACKER 1 = DMC) DEFAULT=PROTRK.",
+    "-Lxx SID memory location in hex. DEFAULT=D400",
+    "-Mxx Set sound mixing rate DEFAULT=44100",
+    "-Oxx Set pulseoptimization/skipping (0 = off, 1 = on) DEFAULT=on",
+    "-Rxx Set realtime-effect optimization/skipping (0 = off, 1 = on) DEFAULT=on",
+    "-Sxx Set speed multiplier (0 for 25Hz, 1 for 1x, 2 for 2x etc.)",
+    "-Txx Set HardSID interactive mode sound buffer length in milliseconds DEFAULT=20, max.buffering=0",
+    "-Uxx Set HardSID playback mode sound buffer length in milliseconds DEFAULT=400, max.buffering=0",
+    "-Vxx Set finevibrato conversion (0 = off, 1 = on) DEFAULT=on",
+    "-Xxx Set window type (0 = window, 1 = fullscreen) DEFAULT=window",
+    "-Zxx Set random reSID write delay in cycles (0 = off) DEFAULT=off",
+    "-N   Use NTSC timing",
+    "-P   Use PAL timing (DEFAULT)",
+    "-W   Write sound output to a file SIDAUDIO.RAW",
+    "-?   Show this info again",
+    "-??  Standalone online help window",
+};
+
+int usagelen = (sizeof usage / sizeof usage[0]);
 
 int main(int argc, char **argv)
 {
@@ -161,46 +193,31 @@ int main(int argc, char **argv)
     if (argv[c][0] == '-')
     #endif
     {
-      int y = 0;
+      int y;
       switch(toupper(argv[c][1]))
       {
+        case '-':
+        if (strcmp(argv[c], "--help"))
+            break;
         case '?':
-        if (!initscreen())
-          return 1;
-        if(argv[c][2]=='?') 
+        if(argv[c][2]=='?')
         {
+          if (!initscreen())
+            return EXIT_FAILURE;
           onlinehelp(1,0);
-          return 0;
+          return EXIT_SUCCESS;
         }
-        printtext(0,y++,15,"Usage: GOATTRK2 [songname] [options]");
-        printtext(0,y++,15,"Options:");
-        printtext(0,y++,15,"-Axx Set ADSR parameter for hardrestart in hex. DEFAULT=0F00");
-        printtext(0,y++,15,"-Bxx Set sound buffer length in milliseconds DEFAULT=100");
-        printtext(0,y++,15,"-Cxx Use CatWeasel MK3 PCI SID (0 = off, 1 = on)");
-        printtext(0,y++,15,"-Dxx Pattern row display (0 = decimal, 1 = hexadecimal)");
-        printtext(0,y++,15,"-Exx Set emulated SID model (0 = 6581 1 = 8580) DEFAULT=6581");
-        printtext(0,y++,15,"-Fxx Set custom SID clock cycles per second (0 = use PAL/NTSC default)");
-        printtext(0,y++,15,"-Gxx Set pitch of A-4 in Hz (0 = use default frequencytable, close to 440Hz)");
-        printtext(0,y++,15,"-Hxx Use HardSID (0 = off, 1 = HardSID ID0 2 = HardSID ID1 etc.)");
-        printtext(0,y++,15,"-Ixx Set reSID interpolation (0 = off, 1 = on, 2 = distortion, 3 = distortion & on) DEFAULT=off");
-        printtext(0,y++,15,"-Kxx Note-entry mode (0 = PROTRACKER 1 = DMC) DEFAULT=PROTRK.");
-        printtext(0,y++,15,"-Lxx SID memory location in hex. DEFAULT=D400");
-        printtext(0,y++,15,"-Mxx Set sound mixing rate DEFAULT=44100");
-        printtext(0,y++,15,"-Oxx Set pulseoptimization/skipping (0 = off, 1 = on) DEFAULT=on");
-        printtext(0,y++,15,"-Rxx Set realtime-effect optimization/skipping (0 = off, 1 = on) DEFAULT=on");
-        printtext(0,y++,15,"-Sxx Set speed multiplier (0 for 25Hz, 1 for 1x, 2 for 2x etc.)");
-        printtext(0,y++,15,"-Txx Set HardSID interactive mode sound buffer length in milliseconds DEFAULT=20, max.buffering=0");
-        printtext(0,y++,15,"-Uxx Set HardSID playback mode sound buffer length in milliseconds DEFAULT=400, max.buffering=0");
-        printtext(0,y++,15,"-Vxx Set finevibrato conversion (0 = off, 1 = on) DEFAULT=on");
-        printtext(0,y++,15,"-Xxx Set window type (0 = window, 1 = fullscreen) DEFAULT=window");
-        printtext(0,y++,15,"-Zxx Set random reSID write delay in cycles (0 = off) DEFAULT=off");
-        printtext(0,y++,15,"-N   Use NTSC timing");
-        printtext(0,y++,15,"-P   Use PAL timing (DEFAULT)");
-        printtext(0,y++,15,"-W   Write sound output to a file SIDAUDIO.RAW");
-        printtext(0,y++,15,"-?   Show this info again");
-        printtext(0,y++,15,"-??  Standalone online help window");	
+#ifdef __WIN32__
+        if (!initscreen())
+          return EXIT_FAILURE;
+        for (y = 0; y < usagelen; ++y)
+          printtext(0,y,15,usage[y]);
         waitkeynoupdate();
-        return 0;
+#else
+        for (y = 0; y < usagelen; ++y)
+          printf("%s\n", usage[y]);
+#endif
+        return EXIT_SUCCESS;
 
         case 'Z':
         sscanf(&argv[c][2], "%u", &residdelay);
@@ -341,7 +358,7 @@ int main(int argc, char **argv)
 
   // Set screenmode
   if (!initscreen())
-    return 1;
+    return EXIT_FAILURE;
 
   // Reset channels/song
   initchannels();
@@ -463,7 +480,7 @@ int main(int argc, char **argv)
   }
 
   // Exit
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 void waitkey(void)
@@ -497,7 +514,7 @@ void waitkeymousenoupdate(void)
 {
   for (;;)
   {
-  	fliptoscreen();
+      fliptoscreen();
     getkey();
     if ((rawkey) || (key)) break;
     if (win_quitted) break;
@@ -585,8 +602,8 @@ void mousecommands(void)
   {
     if ((mousey == 2) && (mousex >= 13 + c*15) && (mousex <= 14 + c*15))
     {
-    	if ((!prevmouseb) || (mouseheld > HOLDDELAY))
-    	{
+        if ((!prevmouseb) || (mouseheld > HOLDDELAY))
+        {
         if (mouseb & MOUSEB_LEFT) 
         {
           epchn = c;
@@ -633,8 +650,8 @@ void mousecommands(void)
         }
         else
         {
-        	if (mouseb & MOUSEB_LEFT)
-        	{
+            if (mouseb & MOUSEB_LEFT)
+            {
             if (mousey == 2) eppos--;
             if (mousey == 34) eppos++;
           }
@@ -1047,8 +1064,16 @@ void load(void)
 {
   if ((editmode != EDIT_INSTRUMENT) && (editmode != EDIT_TABLES))
   {
-    if (fileselector(songfilename, songpath, songfilter, "LOAD SONG", 0))
-      loadsong();
+    if (!shiftpressed)
+    {
+      if (fileselector(songfilename, songpath, songfilter, "LOAD SONG", 0))
+        loadsong();
+    }
+    else
+    {
+      if (fileselector(songfilename, songpath, songfilter, "MERGE SONG", 0))
+        mergesong();
+    }
   }
   else
   {

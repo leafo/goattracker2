@@ -4,7 +4,7 @@
 
 PREFIX=../win32/
 SUFFIX=.exe
-LIBS=-lmingw32 -lSDLmain -lSDL -mwindows -static-libstdc++ -static-libgcc
+LIBS=-lmingw32 -lSDLmain -lSDL -static-libstdc++ -static-libgcc -static
 RM=	-del
 
 include makefile.common
@@ -20,5 +20,5 @@ asm/asmtab.o asm/chnkpool.o asm/expr.o asm/lexyy.o asm/log.o asm/membuf.o asm/me
 asm/pc.o asm/vec.o \
 bme/bme_gfx.o bme/bme_snd.o bme/bme_win.o bme/bme_mou.o bme/bme_kbd.o bme/bme_io.o bme/bme_end.o bme/bme.o
 	windres goattrk2.rc goaticon.o
-	$(CXX) -o $@ $^ goaticon.o $(LIBS)
+	$(CXX) -o $@ $^ goaticon.o -mwindows $(LIBS)
 	strip $@

@@ -37,6 +37,7 @@ void onlinehelp(int standalone,int context)
     "SHIFT+F5-F6 Change speed multiplier",
     "SHIFT+F7 Change hardrestart ADSR",
     "SHIFT+F8 Switch between 6581/8580 SID",
+    "SHIFT+F10 Merge-load song",
     "SHIFT+, . Move song startpos & restart",
     "TAB Cycle between editing modes",
     "INS Insert row (Press on endmark to",

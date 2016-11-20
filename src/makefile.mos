@@ -8,3 +8,6 @@ SUFFIX=
 LIBS=`sdl-config --libs`
 
 include makefile.common
+
+dist:
+	rx /morphos/ReadMe2Guide </readme.txt >/morphos/goattracker.guide goattracker.guide 2.7

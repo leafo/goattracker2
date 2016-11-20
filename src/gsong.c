@@ -1575,3 +1575,166 @@ void optimizeeverything(int oi, int ot)
   }
 }
 
+void mergesong(void)
+{
+  int c;
+  char ident[4];
+  FILE *handle;
+  int songbase;
+  int pattbase;
+  int instrbase;
+  int tablebase[MAX_TABLES];
+
+  // Determine amount of patterns & instruments
+  countpatternlengths();
+  highestusedinstr = 0;
+  for (c = 1; c < MAX_INSTR; c++)
+  {
+    if ((instr[c].ad) || (instr[c].sr) || (instr[c].ptr[0]) || (instr[c].ptr[1]) ||
+        (instr[c].ptr[2]) || (instr[c].vibdelay) || (instr[c].ptr[3]))
+    {
+      if (c > highestusedinstr) highestusedinstr = c;
+    }
+  }
+
+  // Determine amount of songs
+  c = MAX_SONGS - 1;
+  for (;;)
+  {
+    if ((songlen[c][0])&&
+       (songlen[c][1])&&
+       (songlen[c][2])) break;
+    if (c == 0) break;
+    c--;
+  }     
+  
+  pattbase = highestusedpattern + 1;
+  instrbase = highestusedinstr;
+  songbase = c + 1;
+
+  for (c = 0; c < MAX_TABLES; c++)
+  {
+    tablebase[c] = gettablelen(c);
+  }
+
+  handle = fopen(songfilename, "rb");
+
+  if (handle)
+  {
+    fread(ident, 4, 1, handle);
+    if ((!memcmp(ident, "GTS3", 4)) || (!memcmp(ident, "GTS4", 4)) || (!memcmp(ident, "GTS5", 4)))
+    {
+      int d;
+      int e;
+      int length;
+      int amount;
+      int loadsize;
+
+      // Skip infotexts
+      fseek(handle, sizeof songname + sizeof authorname + sizeof copyrightname, SEEK_CUR);
+
+      // Read songorderlists
+      amount = fread8(handle);
+      if (amount + songbase > MAX_SONGS)
+        goto ABORT;
+      for (d = 0; d < amount; d++)
+      {
+        for (c = 0; c < MAX_CHN; c++)
+        {
+          length = fread8(handle);
+          loadsize = length;
+          loadsize++;
+          fread(songorder[songbase + d][c], loadsize, 1, handle);
+          // Remap patterns
+          for (e = 0; e < loadsize - 1; e++)
+          {
+            if (songorder[songbase + d][c][e] < REPEAT)
+              songorder[songbase + d][c][e] += pattbase;
+          }
+        }
+      }
+      // Read instruments
+      amount = fread8(handle);
+      if (amount + instrbase > MAX_INSTR)
+        goto ABORT;
+      for (c = 1; c <= amount; c++)
+      {
+        instr[c + instrbase].ad = fread8(handle);
+        instr[c + instrbase].sr = fread8(handle);
+        instr[c + instrbase].ptr[WTBL] = fread8(handle);
+        instr[c + instrbase].ptr[PTBL] = fread8(handle);
+        instr[c + instrbase].ptr[FTBL] = fread8(handle);
+        instr[c + instrbase].ptr[STBL] = fread8(handle);
+        if (instr[c + instrbase].ptr[WTBL] > 0)
+          instr[c + instrbase].ptr[WTBL] += tablebase[WTBL];
+        if (instr[c + instrbase].ptr[PTBL] > 0)
+          instr[c + instrbase].ptr[PTBL] += tablebase[PTBL];
+        if (instr[c + instrbase].ptr[FTBL] > 0)
+          instr[c + instrbase].ptr[FTBL] += tablebase[FTBL];
+        if (instr[c + instrbase].ptr[STBL] > 0)
+          instr[c + instrbase].ptr[STBL] += tablebase[STBL];
+        instr[c + instrbase].vibdelay = fread8(handle);
+        instr[c + instrbase].gatetimer = fread8(handle);
+        instr[c + instrbase].firstwave = fread8(handle);
+        fread(&instr[c + instrbase].name, MAX_INSTRNAMELEN, 1, handle);
+      }
+      // Read tables
+      for (c = 0; c < MAX_TABLES; c++)
+      {
+        loadsize = fread8(handle);
+        if (loadsize + tablebase[c] > MAX_TABLELEN)
+          goto ABORT;
+        fread(&ltable[c][tablebase[c]], loadsize, 1, handle);
+        fread(&rtable[c][tablebase[c]], loadsize, 1, handle);
+        // Remap jumps and tablecommands
+        for (d = tablebase[c]; d < tablebase[c] + loadsize; d++)
+        {
+          if (ltable[c][d] == 0xff && rtable[c][d] > 0)
+            rtable[c][d] += tablebase[c];
+          if (c == 0 && (ltable[c][d] >= WAVECMD && ltable[c][d] <= WAVELASTCMD))
+          {
+            int cmd = ltable[c][d] & 0xf;
+            if (cmd == CMD_SETWAVEPTR && rtable[c][d] > 0)
+              rtable[c][d] += tablebase[WTBL];
+            if (cmd == CMD_SETPULSEPTR && rtable[c][d] > 0)
+              rtable[c][d] += tablebase[PTBL];
+            if (cmd == CMD_SETFILTERPTR && rtable[c][d] > 0)
+              rtable[c][d] += tablebase[FTBL];
+            if (((cmd >= CMD_PORTAUP && cmd <= CMD_VIBRATO) || cmd == CMD_FUNKTEMPO) && rtable[c][d] > 0)
+              rtable[c][d] += tablebase[STBL];
+          }
+        }
+      }
+      // Read patterns
+      amount = fread8(handle);
+      if (amount + pattbase > MAX_PATT)
+        goto ABORT;
+
+      for (c = 0; c < amount; c++)
+      {
+        length = fread8(handle) * 4;
+        fread(pattern[c + pattbase], length, 1, handle);
+        // Remap pattern instruments and commands
+        for (d = 0; d < length; d += 4)
+        {
+          if (pattern[c + pattbase][d + 1] > 0)
+            pattern[c + pattbase][d + 1] += instrbase;
+          if (pattern[c + pattbase][d + 2] == CMD_SETWAVEPTR && pattern[c + pattbase][d + 3] > 0)
+            pattern[c + pattbase][d + 3] += tablebase[WTBL];
+          if (pattern[c + pattbase][d + 2] == CMD_SETPULSEPTR && pattern[c + pattbase][d + 3] > 0)
+            pattern[c + pattbase][d + 3] += tablebase[PTBL];
+          if (pattern[c + pattbase][d + 2] == CMD_SETFILTERPTR && pattern[c + pattbase][d + 3] > 0)
+            pattern[c + pattbase][d + 3] += tablebase[FTBL];
+          if (((pattern[c + pattbase][d + 2] >= CMD_PORTAUP && pattern[c + pattbase][d + 2] <= CMD_VIBRATO) ||
+            pattern[c + pattbase][d + 2] == CMD_FUNKTEMPO) && pattern[c + pattbase][d + 3] > 0)
+            pattern[c + pattbase][d + 3] += tablebase[STBL];
+        }
+      }
+      countpatternlengths();
+      songchange();
+    }
+  }
+
+  ABORT:
+  fclose(handle);
+}

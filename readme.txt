@@ -1,4 +1,4 @@
-GoatTracker v2.72
+GoatTracker v2.73
 -----------------
 
 Editor by Lasse Öörni (loorni@gmail.com)
@@ -9,7 +9,8 @@ Uses 6510 crossassembler from Exomizer2 beta by Magnus Lind.
 Uses the SDL library.
 GoatTracker icon by Antonio Vera.
 Command quick reference by Simon Bennett.
-Patches by Stefan A. Haubenthal, Valerio Cannone and Raine M. Ekman.
+Patches and further development by Stefan A. Haubenthal, Valerio Cannone, Raine M. Ekman, 
+Tero Lindeman, Henrik Paulini and Groepaz
 
 Distributed under GNU General Public License
 (see the file COPYING for details)
@@ -62,6 +63,7 @@ Table of contents
 4.2 SNGSPLI2.EXE
 4.3 MOD2SNG.EXE
 4.4 BETACONV.EXE
+4.5 GT2RELOC.EXE
 
 5. Using the songs outside the editor
 5.1 Playroutine options
@@ -132,14 +134,15 @@ for Win32 platform.
    first step of instrument wavetable is unsupported and may result in missing
    notes.
 
-6. When using a playroutine with unbuffered SID-writes (Standard /w unbuffered
-   or Minimal) and encountering ADSR-bugs after packing/relocating, you can try
-   either:
+6. When using a playroutine with unbuffered SID-writes and encountering ADSR-
+   bugs after packing/relocating, you can try either:
    1) Set pulse-startpos to nonzero value in the troublesome instruments and
       change the 1stFrame Wave parameter of some instrument slightly, for
       example from $09 to $0B, to disable a playroutine optimization. The
       idea in this is to make the noteinit routine take more CPU cycles.
-   2) Use a playroutine with buffered writes to pack/relocate.
+   2) Use a playroutine with buffered writes to pack/relocate. You can try
+      the "standard" buffering first, and full buffering if that does not
+      help yet.
    3) Try hardrestart attack parameter $F for alternative SID register write
       order.
 
@@ -266,7 +269,8 @@ drivers installed to use this feature.
 
 CatWeasel MK3 PCI SID support is available with -C option (-C1 to turn on).
 
-To use the PC64 cable, you need Daniel Illgen's HardSID-DLL-Clone. Available at
+To use the PC64 cable or a userport RS-232 interface, get the HardSID-DLL-Clone
+drivers from Daniel Illgen's page
 http://dawork.synchronus.de/
 
 To enable better support of multispeeds and cycle-exact timing on HardSID
@@ -322,6 +326,7 @@ SHIFT+F5  Decrease speed multiplier
 SHIFT+F6  Increase speed multiplier
 SHIFT+F7  Edit hardrestart ADSR parameter
 SHIFT+F8  Switch between 6581 and 8580 SID models
+SHIFT+F10 Merge-load song
 SHIFT+,.  Move song startposition on all channels and restart last playmode
 TAB       Cycle between editing modes (forwards)
 SHIFT+TAB Cycle between editing modes (backwards)
@@ -1183,6 +1188,35 @@ Usage: BETACONV <source> <destination> [vibdepth] [pulse]
        [vibdepth] decides whether to halve vibdepth (1=yes 0=no), default 0
        [pulse] decides whether to halve pulse speed (1=yes 0=no), default 0
 
+4.5 GT2RELOC.EXE
+----------------
+
+This is a standalone version of the packer/relocator. It converts .sng files
+into .bin, .prg or .sid depending on outfiles extension.
+
+Usage: GT2RELOC <songname> <outfile> [options]
+
+Options:
+-Axx Set ADSR parameter for hardrestart in hex. DEFAULT=0F00
+-Bx  enable/disable buffered SID writes. DEFAULT=disabled
+-Cx  enable/disable zeropage ghost registers. DEFAULT=disabled
+-Dx  enable/disable sound effect support. DEFAULT=disabled
+-Ex  enable/disable volume change support. DEFAULT=disabled
+-Fxx Set custom SID clock cycles per second (0 = use PAL/NTSC default)
+-Gxx Set pitch of A-4 in Hz (0 = use default frequencytable, close to 440Hz)
+-Hx  enable/disable storing of author info. DEFAULT=disabled
+-Ix  enable/disable optimizations. DEFAULT=enabled
+-Jx  enable/disable full buffering. DEFAULT=disabled
+-Lxx SID memory location in hex. DEFAULT=D400
+-N   Use NTSC timing
+-Oxx Set pulseoptimization/skipping (0 = off, 1 = on) DEFAULT=on
+-P   Use PAL timing (DEFAULT)
+-Rxx Set realtime-effect optimization/skipping (0 = off, 1 = on) DEFAULT=on
+-Sxx Set speed multiplier (0 for 25Hz, 1 for 1x, 2 for 2x etc.) DEFAULT=1
+-Vxx Set finevibrato conversion (0 = off, 1 = on) DEFAULT=on
+-Wxx player memory location highbyte in hex. DEFAULT=1000
+-Zxx zeropage memory location in hex. DEFAULT=FC
+-?   Show options
 
 5. Using the songs outside the editor
 -------------------------------------
@@ -1286,6 +1320,12 @@ accordingly. If you encounter anomalies in the sound (such as ADSR bugs caused
 by unpredictable timing variation) you can try disabling the optimizations.
 Normally this is not necessary, but is included just in case.
 
+FULL BUFFERING - in some cases, especially with multispeeds, the "standard"
+or per-channel buffering is not enough and will still produce ADSR errors. 
+This enables a functionality similar to the ZP ghost regs, where the previous
+frame's SID data is copied to the SID at the beginning of the play call for
+maximum stability. Will use more rastertime and imply the same problems with 
+sound effect playback as the ZP ghost regs, so use only when necessary.
 
 6. File/data formats description
 --------------------------------
@@ -1866,3 +1906,11 @@ v2.71     - Added keycode fix patch from Valerio Cannone.
 v2.72     - Fixed incorrect transpose range determination in the relocator.
           - Fixed crash in jam mode whan an illegal pattern command was executed
             from the wavetable.
+            
+v2.73     - Reverted to old playroutine timing.
+          - Added full buffering option (similar to ZP ghostregs) which will
+            buffer everything to ghost regs and dump the previous frame to the
+            SID at the beginning of the play call.
+          - Merge song functionality (SHIFT+F10.)
+          - Help text is written to console on non-Win32 platforms.
+          - gt2reloc utility by Groepaz.

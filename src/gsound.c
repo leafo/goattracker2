@@ -390,17 +390,8 @@ int sound_thread(void *userdata)
     {
       unsigned o = sid_getorder(c);
 
-        // Extra delay before loading the waveform (and mt_chngate,x)
-        if ((o == 4) || (o == 11) || (o == 18))
-        {
-        HardSID_Write(usehardsid-1, SIDWRITEDELAY+SIDWAVEDELAY, o, sidreg[o]);
-          cycles -= SIDWRITEDELAY+SIDWAVEDELAY;
-      }
-        else
-      {
-            HardSID_Write(usehardsid-1, SIDWRITEDELAY, o, sidreg[o]);
-            cycles -= SIDWRITEDELAY;
-        }
+      HardSID_Write(usehardsid-1, SIDWRITEDELAY, o, sidreg[o]);
+      cycles -= SIDWRITEDELAY;
     }
 
     // Now wait the rest of frame

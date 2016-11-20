@@ -15,7 +15,8 @@ char *playeroptname[] =
   "Volume change support",
   "Store author-info",
   "Use zeropage ghostregs",
-  "Disable optimization"
+  "Disable optimization",
+  "Full SID buffering"
 };
 
 char *tableleftname[] = {
@@ -82,10 +83,27 @@ int nozerospeed;
 struct membuf src = STATIC_MEMBUF_INIT;
 struct membuf dest = STATIC_MEMBUF_INIT;
 
+#ifdef GT2RELOC
+#ifdef __WIN32__
+extern FILE *STDOUT, *STDERR;
+#else
+#define STDOUT stdout
+#define STDERR stderr
+#endif
+extern char packedsongname[MAX_PATHNAME];
+#define clearscreen()
+#define fliptoscreen()
+#define waitkeynoupdate()
+#define printtextc(x, y, b) fputs(b, STDERR)
+#define printmainscreen()
+#endif
+
 void relocator(void)
 {
+#ifndef GT2RELOC
   char packedsongname[MAX_FILENAME];
   char packedfilter[MAX_FILENAME];
+#endif
   unsigned char *packeddata = NULL;
   char *playername = "player.s";
 
@@ -492,6 +510,7 @@ void relocator(void)
     findtableduplicates(c);
 
   // Select playroutine options
+#ifndef GT2RELOC
   clearscreen();
   printblankc(0, 0, 15+16, MAX_COLUMNS);
   if (!strlen(loadedsongfilename))
@@ -532,7 +551,7 @@ void relocator(void)
       playerversion ^= (PLAYER_BUFFERED << opt);
       if (opt)
       {
-        if ((playerversion & PLAYER_SOUNDEFFECTS) || (playerversion & PLAYER_ZPGHOSTREGS))
+        if ((playerversion & PLAYER_SOUNDEFFECTS) || (playerversion & PLAYER_ZPGHOSTREGS) || (playerversion & PLAYER_FULLBUFFERED))
           playerversion |= PLAYER_BUFFERED;
       }
       else
@@ -541,6 +560,7 @@ void relocator(void)
         {
           playerversion &= ~PLAYER_SOUNDEFFECTS;
           playerversion &= ~PLAYER_ZPGHOSTREGS;
+	  playerversion &= ~PLAYER_FULLBUFFERED;
         }
       }
       break;
@@ -565,7 +585,7 @@ void relocator(void)
     }
   }
   if (selectdone == -1) goto PRCLEANUP;
-
+#endif
   // Disable optimizations if necessary
   if (playerversion & PLAYER_NOOPTIMIZATION)
   {
@@ -608,11 +628,11 @@ void relocator(void)
   }
 
   // Make sure buffering is used if it is needed
-  if ((playerversion & PLAYER_SOUNDEFFECTS) || (playerversion & PLAYER_ZPGHOSTREGS))
+  if ((playerversion & PLAYER_SOUNDEFFECTS) || (playerversion & PLAYER_ZPGHOSTREGS) || (playerversion & PLAYER_FULLBUFFERED))
     playerversion |= PLAYER_BUFFERED;
 
   // Sound effect or ghostreg players always use full 3 channels
-  if ((playerversion & PLAYER_SOUNDEFFECTS) || (playerversion & PLAYER_ZPGHOSTREGS))
+  if ((playerversion & PLAYER_SOUNDEFFECTS) || (playerversion & PLAYER_FULLBUFFERED) || (playerversion & PLAYER_ZPGHOSTREGS))
     channels = 3;
 
   // Allocate memory for song-orderlists
@@ -913,14 +933,18 @@ void relocator(void)
   if (nopulse) pulsetblsize = 0;
   if (nofilter) filttblsize = 0;
 
+#ifdef GT2RELOC
+  fprintf(STDOUT, "Player address:   $%04X\n", playeradr);
+  fprintf(STDOUT, "Zeropage address: $%04X\n", zeropageadr);
+#else
   sprintf(textbuffer, "SELECT START ADDRESS: (CURSORS=MOVE, ENTER=ACCEPT, ESC=CANCEL)");
-  printtext(1, 10, 15, textbuffer);
+  printtext(1, 11, 15, textbuffer);
 
   selectdone = 0;
   while (!selectdone)
   {
     sprintf(textbuffer, "$%04X", playeradr);
-    printtext(1, 11, 10, textbuffer);
+    printtext(1, 12, 10, textbuffer);
 
     fliptoscreen();
     waitkeynoupdate();
@@ -966,7 +990,7 @@ void relocator(void)
   if (selectdone == -1) goto PRCLEANUP;
 
   sprintf(textbuffer, "SELECT ZEROPAGE ADDRESS: (CURSORS=MOVE, ENTER=ACCEPT, ESC=CANCEL)");
-  printtext(1, 13, 15, textbuffer);
+  printtext(1, 14, 15, textbuffer);
 
   selectdone = 0;
   while (!selectdone)
@@ -998,7 +1022,7 @@ void relocator(void)
       sprintf(textbuffer, "$%02X-$%02X (ghostregs start at %02X)", zeropageadr, zeropageadr+26, zeropageadr);
     }
 
-    printtext(1, 14, 10, textbuffer);
+    printtext(1, 15, 10, textbuffer);
 
     fliptoscreen();
     waitkeynoupdate();
@@ -1038,7 +1062,7 @@ void relocator(void)
   }
 
   if (selectdone == -1) goto PRCLEANUP;
-
+#endif
   // Validate frequencytable parameters
   if (lastnote < firstnote)
     lastnote = firstnote;
@@ -1062,6 +1086,7 @@ void relocator(void)
   insertdefine("SOUNDSUPPORT", (playerversion & PLAYER_SOUNDEFFECTS) ? 1 : 0);
   insertdefine("VOLSUPPORT", (playerversion & PLAYER_VOLUME) ? 1 : 0);
   insertdefine("BUFFEREDWRITES", (playerversion & PLAYER_BUFFERED) ? 1 : 0);
+  insertdefine("GHOSTREGS", (playerversion & (PLAYER_ZPGHOSTREGS|PLAYER_FULLBUFFERED)) ? 1 : 0);
   insertdefine("ZPGHOSTREGS", (playerversion & PLAYER_ZPGHOSTREGS) ? 1 : 0);
   insertdefine("FIXEDPARAMS", fixedparams);
   insertdefine("SIMPLEPULSE", simplepulse);
@@ -1125,7 +1150,7 @@ void relocator(void)
   // Insert source code of player
   if (adparam >= 0xf000)
     playername = "altplayer.s";
-    
+
   if (!insertfile(playername))
   {
     clearscreen();
@@ -1133,6 +1158,22 @@ void relocator(void)
     fliptoscreen();
     waitkeynoupdate();
     goto PRCLEANUP;
+  }
+  
+  // Modify ghostregs to not be zeropage if needed
+  if ((playerversion & PLAYER_FULLBUFFERED) && (playerversion & PLAYER_ZPGHOSTREGS) == 0)
+  {
+    int bufsize = membuf_get_size(&src);
+    char* bufdata = (char*)membuf_get(&src);
+    int c;
+    for (c = 0; c < bufsize; c++)
+    {
+      if (bufdata[c] == '<')
+      {
+        if (memcmp(bufdata + c + 1, "ghost", 5) == 0)
+          bufdata[c] = ' ';
+      }
+    }
   }
 
   // Insert frequencytable
@@ -1377,6 +1418,25 @@ void relocator(void)
   }
 
   // Print results
+#ifdef GT2RELOC
+  fprintf(STDOUT, "packing results:\n");
+  fprintf(STDOUT, "Playroutine:     %d bytes\n", playersize);
+  fprintf(STDOUT, "Songtable:       %d bytes\n", songtblsize);
+  fprintf(STDOUT, "Song-orderlists: %d bytes\n", songdatasize);
+  fprintf(STDOUT, "Patterntable:    %d bytes\n", patttblsize);
+  fprintf(STDOUT, "Patterns:        %d bytes\n", pattdatasize);
+  fprintf(STDOUT, "Instruments:     %d bytes\n", instrsize);
+  fprintf(STDOUT, "Tables:          %d bytes\n", wavetblsize+pulsetblsize+filttblsize+speedtblsize);
+  fprintf(STDOUT, "Total size:      %d bytes\n", packedsize);
+
+  songhandle = fopen(packedsongname, "wb");
+  if (!songhandle) 
+  {
+      fprintf(STDERR, "error: could not open output file '%s'.\n", packedsongname);
+      goto PRCLEANUP;
+  }
+
+#else
   clearscreen();
   printblankc(0, 0, 15+16, MAX_COLUMNS);
   if (!strlen(loadedsongfilename))
@@ -1522,6 +1582,7 @@ void relocator(void)
     }
     songhandle = fopen(packedsongname, "wb");
   }
+#endif
 
   if (fileformat == FORMAT_PRG)
   {

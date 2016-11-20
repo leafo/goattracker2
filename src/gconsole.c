@@ -28,6 +28,7 @@ unsigned oldmousepixely = 0xffffffff;
 int mouseheld = 0;
 int region[MAX_ROWS];
 
+void loadexternalpalette(void);
 void initicon(void);
 
 inline void setcharcolor(unsigned *dptr, short ch, short color)
@@ -71,6 +72,7 @@ int initscreen(void)
   io_close(handle);
 
   gfx_loadpalette("palette.bin");
+  loadexternalpalette();
   gfx_setpalette();
 
   gfx_loadsprites(0, "cursor.bin");
@@ -79,6 +81,45 @@ int initscreen(void)
   clearscreen();
   atexit(closescreen);
   return 1;
+}
+
+void loadexternalpalette(void)
+{
+  FILE *ext_f;
+  if ((ext_f = fopen("custom.pal", "rt")))
+  {
+    int p = 0;
+    char ln[100];
+    strcpy(ln, "");
+    fgets(ln, sizeof(ln), ext_f);
+
+    if (strncmp("JASC-PAL", ln, 8) == 0)
+    {
+      int colors;
+      fgets(ln, sizeof(ln), ext_f);
+      fgets(ln, sizeof(ln), ext_f);
+      if (sscanf(ln, "%d", &colors) == 1 && colors == 256)
+      {
+        while (!feof(ext_f))
+        {
+          int r, g, b;
+          if (!fgets(ln, sizeof(ln), ext_f)) break;
+          if (sscanf(ln, "%d %d %d", &r, &g, &b) == 3)
+          {
+            // JASC palette is 8-bit and goat palette is 6-bit
+            gfx_palette[p++] = r / 4;
+            gfx_palette[p++] = g / 4;
+            gfx_palette[p++] = b / 4;
+          }
+
+          if (p >= 768) break;
+        }
+        gfx_calcpalette(64, 0, 0, 0);
+      }
+    }
+
+    fclose(ext_f);
+  }
 }
 
 void initicon(void)
@@ -432,4 +473,3 @@ void getkey(void)
   if (rawkey == SDLK_KP8) key = '8';
   if (rawkey == SDLK_KP9) key = '9';
 }
-

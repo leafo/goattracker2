@@ -29,7 +29,6 @@ int wavelen = 0, pulselen = 0, filtlen = 0;
 
 int vibdepth = 0, pulse = 0;
 
-int main(int argc, char **argv);
 int loadsong(char *name);
 int savesong(char *name);
 void countpatternlengths(void);
@@ -45,7 +44,7 @@ int main(int argc, char **argv)
            "[pulse] decides whether to halve pulse speed (1=yes 0=no), default 0\n\n"
            "Converts GT2 early beta (47 instr.) song to GT2 current format (63 instr.)\n"
            "Optionally, halves vibrato depths and pulse speeds.\n");
-    return 1;
+    return EXIT_FAILURE;
   }
 
   if (argc >= 4)
@@ -61,14 +60,14 @@ int main(int argc, char **argv)
   if (!loadsong(argv[1]))
   {
     printf("ERROR: Couldn't load source song.");
-    return 1;
+    return EXIT_FAILURE;
   }
   if (!savesong(argv[2]))
   {
     printf("ERROR: Couldn't save destination song.");
-    return 1;
+    return EXIT_FAILURE;
   }
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 int loadsong(char *name)
@@ -357,4 +356,3 @@ int gettablelen(int num)
    }
    return c+1;
 }
-
