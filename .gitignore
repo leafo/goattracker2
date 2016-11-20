@@ -1,3 +1,5 @@
+configure
+Makefile.in
 *.o
 *.dat
 linux/
