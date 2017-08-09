@@ -1,0 +1,21 @@
+Goattracker 2 with MIDI Support Linux Guide by mondlos
+
+Installation
+1. Clone Repository: git clone https://github.com/leafo/goattracker2.git
+2. Install SDL 1: sudo apt install libsdl1.2-dev
+3. Compile dat2inc & datafile: cd goatracker2/src/bme && make
+4. Copy dat2inc and datafile to /usr/bin: sudo cp dat2inc /usr/bin/dat2inc && sudo cp datafile /usr/bin/dat2inc
+5. Change to src and create empty Linux directory: cd .. && mkdir linux
+6. Compile: make 
+7. Install: sudo cp -a linux/. /usr/bin
+8. Run: goattrk2
+
+Setup USB Midi Keyboard
+1. Plug in the Keyboard
+2. Install qjackctl & a2jmidid: sudo apt install qjackctl a2jmidid
+3. Open goattrk2
+4. Open qjackctl -> Setup -> Options -> Execute script after Startup and write: 
+a2jmidid -e &
+5. Close Setup and go to Patchbay. Add the Plugs for Goattracker and your Midi Keyboard (in the MIDI tab), highlight them and press Ctrl + C to connect them.
+
+Start qjackctl and then start goattrk2 to use USB MIDI Keyboard in Goattracker 2.
