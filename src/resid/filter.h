@@ -1540,7 +1540,10 @@ int Filter::solve_gain(opamp_t* opamp, int n, int vi, int& x, model_filter_t& mf
     // The resulting quotient is thus scaled by m*2^16.
 
     // Newton-Raphson step: xk1 = xk - f(xk)/f'(xk)
-    x -= f/df;
+    // If f(xk) or f'(xk) are zero then we can't improve further.
+    if (df) {
+        x -= f/df;
+    }
     if (unlikely(x == xk)) {
       // No further root improvement possible.
       return vo;
@@ -1716,7 +1719,7 @@ int Filter::solve_integrate_6581(int dt, int vi, int& vx, int& vc, model_filter_
   if (Vgd < 0) Vgd = 0;
 
   // VCR current, scaled by m*2^15*2^15 = m*2^30
-  int n_I_vcr = (vcr_n_Ids_term[Vgs] - vcr_n_Ids_term[Vgd]) << 15;
+  int n_I_vcr = int(unsigned(vcr_n_Ids_term[Vgs] - vcr_n_Ids_term[Vgd]) << 15);
 
   // Change in capacitor charge.
   vc -= (n_I_snake + n_I_vcr)*dt;
@@ -1765,9 +1768,9 @@ int Filter::solve_integrate_8580(int dt, int vi, int& vx, int& vc, model_filter_
   // since they are all used in subtractions which cancel out the translation:
   // (a - t) - (b - t) = a - b
 
-  // Dac voltages for triode mode calculation.
+  // Dac voltages.
   unsigned int Vgst = kVgt - vx;
-  unsigned int Vgdt = kVgt - vi;
+  unsigned int Vgdt = (vi < kVgt) ? kVgt - vi : 0;  // triode/saturation mode
 
   // Dac current, scaled by (1/m)*2^13*m*2^16*m*2^16*2^-15 = m*2^30
   int n_I_rfc = n_dac*(int(Vgst*Vgst - Vgdt*Vgdt) >> 15);
