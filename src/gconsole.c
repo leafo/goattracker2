@@ -462,14 +462,14 @@ void getkey(void)
     rawkey = SDLK_RETURN;
   }
 
-  if (rawkey == SDLK_KP0) key = '0';
-  if (rawkey == SDLK_KP1) key = '1';
-  if (rawkey == SDLK_KP2) key = '2';
-  if (rawkey == SDLK_KP3) key = '3';
-  if (rawkey == SDLK_KP4) key = '4';
-  if (rawkey == SDLK_KP5) key = '5';
-  if (rawkey == SDLK_KP6) key = '6';
-  if (rawkey == SDLK_KP7) key = '7';
-  if (rawkey == SDLK_KP8) key = '8';
-  if (rawkey == SDLK_KP9) key = '9';
+  if (rawkey == SDLK_KP_0) key = '0';
+  if (rawkey == SDLK_KP_1) key = '1';
+  if (rawkey == SDLK_KP_2) key = '2';
+  if (rawkey == SDLK_KP_3) key = '3';
+  if (rawkey == SDLK_KP_4) key = '4';
+  if (rawkey == SDLK_KP_5) key = '5';
+  if (rawkey == SDLK_KP_6) key = '6';
+  if (rawkey == SDLK_KP_7) key = '7';
+  if (rawkey == SDLK_KP_8) key = '8';
+  if (rawkey == SDLK_KP_9) key = '9';
 }
