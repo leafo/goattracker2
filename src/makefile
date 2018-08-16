@@ -2,9 +2,9 @@
 # Linux makefile
 #
 
-CFLAGS=`sdl-config --cflags` `pkg-config --cflags jack`
+CFLAGS=`sdl2-config --cflags` `pkg-config --cflags jack`
 PREFIX=../linux/
 SUFFIX=
-LIBS=`sdl-config --libs` `pkg-config --libs jack`
+LIBS=`sdl2-config --libs` `pkg-config --libs jack`
 
 include makefile.common
