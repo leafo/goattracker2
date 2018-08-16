@@ -53,7 +53,7 @@ void insertnote(int newnote) {
     {
         if (autoadvance < 2)
         {
-            eppos;
+            eppos++;
             if (eppos > pattlen[epnum[epchn]])
             {
                 eppos = 0;
