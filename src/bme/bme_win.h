@@ -1,6 +1,6 @@
 // BME windows, input & timing module header file
 
-int win_openwindow(char *appname, char *icon);
+int win_openwindow(unsigned xsize, unsigned ysize, char *appname, char *icon);
 void win_closewindow(void);
 void win_messagebox(char *string);
 void win_checkmessages(void);
@@ -24,4 +24,5 @@ SDL_Joystick *joy[MAX_JOYSTICKS];
 extern Sint16 joyx[MAX_JOYSTICKS];
 extern Sint16 joyy[MAX_JOYSTICKS];
 extern Uint32 joybuttons[MAX_JOYSTICKS];
+extern SDL_Window *win_window;
 

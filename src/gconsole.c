@@ -44,17 +44,19 @@ inline void setcolor(unsigned *dptr, short color)
 int initscreen(void)
 {
   int handle;
+  unsigned xsize = MAX_COLUMNS * 8;
+  unsigned ysize = MAX_ROWS * 16;
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0)
     return 0;
-  win_openwindow("GoatTracker", NULL);
+  win_openwindow(xsize, ysize, "GoatTracker", NULL);
   win_setmousemode(MOUSE_ALWAYS_HIDDEN);
   initicon();
 
-  if (!gfx_init(MAX_COLUMNS * 8, MAX_ROWS * 16, 60, 0))
+  if (!gfx_init(xsize, ysize, 60, 0))
   {
     win_fullscreen = 0;
-    if (!gfx_init(MAX_COLUMNS * 8, MAX_ROWS * 16, 60, 0))
+    if (!gfx_init(xsize, ysize, 60, 0))
       return 0;
   }
    

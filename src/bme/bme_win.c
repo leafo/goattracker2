@@ -18,10 +18,11 @@ SDL_Joystick *joy[MAX_JOYSTICKS] = {NULL};
 Sint16 joyx[MAX_JOYSTICKS];
 Sint16 joyy[MAX_JOYSTICKS];
 Uint32 joybuttons[MAX_JOYSTICKS];
+SDL_Window *win_window = NULL;
 
 // Prototypes
 
-int win_openwindow(char *appname, char *icon);
+int win_openwindow(unsigned xsize, unsigned ysize, char *appname, char *icon);
 void win_closewindow(void);
 void win_messagebox(char *string);
 void win_checkmessages(void);
@@ -51,8 +52,10 @@ static int win_currenttime = 0;
 static int win_framecounter = 0;
 static int win_activateclick = 0;
 
-int win_openwindow(char *appname, char *icon)
+int win_openwindow(unsigned xsize, unsigned ysize, char *appname, char *icon)
 {
+    Uint32 flags = win_fullscreen ? SDL_WINDOW_FULLSCREEN : 0;
+
     if (!win_windowinitted)
     {
         if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
@@ -63,9 +66,13 @@ int win_openwindow(char *appname, char *icon)
         win_windowinitted = 1;
     }
 
-    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-    SDL_EnableUNICODE(1);
-    SDL_WM_SetCaption(appname, icon);
+    //SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+    //SDL_EnableUNICODE(1);
+    win_window = SDL_CreateWindow(appname,
+                             SDL_WINDOWPOS_UNDEFINED,
+                             SDL_WINDOWPOS_UNDEFINED,
+                             xsize, ysize,
+                             flags);
     return BME_OK;
 }
 
@@ -193,7 +200,7 @@ void win_checkmessages(void)
 
             case SDL_KEYDOWN:
             win_virtualkey = event.key.keysym.sym;
-            win_asciikey = event.key.keysym.unicode;
+            win_asciikey = event.key.keysym.scancode;
             keynum = event.key.keysym.sym;
             if (keynum < MAX_KEYS)
             {
@@ -216,8 +223,8 @@ void win_checkmessages(void)
             }
             break;
 
-            case SDL_VIDEORESIZE:
-            case SDL_VIDEOEXPOSE:
+            case SDL_WINDOWEVENT_RESIZED:
+            //case SDL_VIDEOEXPOSE:
             gfx_redraw = 1;
             break;
         }
