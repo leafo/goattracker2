@@ -199,9 +199,12 @@ void win_checkmessages(void)
             win_quitted = 1;
             break;
 
+            case SDL_TEXTINPUT:
+            win_asciikey = event.text.text[0];
+            break;
+                
             case SDL_KEYDOWN:
             win_virtualkey = event.key.keysym.sym;
-            win_asciikey = event.key.keysym.scancode;
             keynum = event.key.keysym.scancode;
             if (keynum < SDL_NUM_SCANCODES)
             {

@@ -465,20 +465,20 @@ void getkey(void)
       (win_keystate[SDL_SCANCODE_LCTRL])||(win_keystate[SDL_SCANCODE_RCTRL]))
     shiftpressed = 1;
 
-  if (rawkey == SDLK_KP_ENTER)
+  if (rawkey == SDL_SCANCODE_KP_ENTER)
   {
     key = KEY_ENTER;
-    rawkey = SDLK_RETURN;
+    rawkey = SDL_SCANCODE_RETURN;
   }
 
-  if (rawkey == SDLK_KP_0) key = '0';
-  if (rawkey == SDLK_KP_1) key = '1';
-  if (rawkey == SDLK_KP_2) key = '2';
-  if (rawkey == SDLK_KP_3) key = '3';
-  if (rawkey == SDLK_KP_4) key = '4';
-  if (rawkey == SDLK_KP_5) key = '5';
-  if (rawkey == SDLK_KP_6) key = '6';
-  if (rawkey == SDLK_KP_7) key = '7';
-  if (rawkey == SDLK_KP_8) key = '8';
-  if (rawkey == SDLK_KP_9) key = '9';
+  if (rawkey == SDL_SCANCODE_KP_0) key = '0';
+  if (rawkey == SDL_SCANCODE_KP_1) key = '1';
+  if (rawkey == SDL_SCANCODE_KP_2) key = '2';
+  if (rawkey == SDL_SCANCODE_KP_3) key = '3';
+  if (rawkey == SDL_SCANCODE_KP_4) key = '4';
+  if (rawkey == SDL_SCANCODE_KP_5) key = '5';
+  if (rawkey == SDL_SCANCODE_KP_6) key = '6';
+  if (rawkey == SDL_SCANCODE_KP_7) key = '7';
+  if (rawkey == SDL_SCANCODE_KP_8) key = '8';
+  if (rawkey == SDL_SCANCODE_KP_9) key = '9';
 }
