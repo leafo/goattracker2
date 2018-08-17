@@ -135,12 +135,14 @@ int gfx_init(unsigned xsize, unsigned ysize, unsigned framerate, unsigned flags)
     gfx_sdlpalette[255].b = 255;
     gfx_sdlpalette[255].a = 255;
 
-    gfx_screen = SDL_CreateRGBSurfaceWithFormat(0, xsize, ysize, 8, SDL_PIXELFORMAT_INDEX8);
     gfx_renderer = SDL_CreateRenderer(win_window, -1, sdlflags);
-    sdlTexture = SDL_CreateTexture(gfx_renderer,
-                                            SDL_PIXELFORMAT_INDEX8,
-                                            SDL_TEXTUREACCESS_STREAMING,
-                                            xsize, ysize);
+    gfx_screen = SDL_CreateRGBSurfaceWithFormat(0, xsize, ysize, 8, SDL_PIXELFORMAT_INDEX8);
+//     sdlTexture = SDL_CreateTexture(gfx_renderer,
+//                                             SDL_PIXELFORMAT_INDEX8,
+//                                             SDL_TEXTUREACCESS_STREAMING,
+//                                             xsize, ysize);
+    sdlTexture = SDL_CreateTextureFromSurface(gfx_renderer, gfx_screen);
+
     gfx_initexec = 0;
     if (gfx_screen)
     {
