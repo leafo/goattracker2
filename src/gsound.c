@@ -141,7 +141,7 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
     else return 0;
     if (!cycleexacthardsid)
     {
-      SDL_SetTimer(1000 / framerate, sound_timer);
+      SDL_AddTimer(1000 / framerate, sound_timer, NULL);
     }
     else
     {
@@ -163,7 +163,7 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
       }
     }
     else return 0;
-    SDL_SetTimer(1000 / framerate, sound_timer);
+    SDL_AddTimer(1000 / framerate, sound_timer, NULL);
     #endif
 
     goto SOUNDOK;
@@ -191,7 +191,7 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
     #endif
 
     usecatweasel = 1;
-    SDL_SetTimer(1000 / framerate, sound_timer);
+    SDL_AddTimer(1000 / framerate, sound_timer, NULL);
     goto SOUNDOK;
   }
 
@@ -239,7 +239,7 @@ void sound_uninit(void)
     #ifdef __WIN32__
     if (!playerthread)
     {
-      SDL_SetTimer(0, NULL);
+      SDL_AddTimer(0, NULL, NULL);
     }
     else
     {
@@ -248,7 +248,7 @@ void sound_uninit(void)
       playerthread = NULL;
     }
     #else
-    SDL_SetTimer(0, NULL);
+    SDL_AddTimer(0, NULL, NULL);
     #endif
   }
   else

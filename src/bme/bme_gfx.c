@@ -137,7 +137,7 @@ int gfx_init(unsigned xsize, unsigned ysize, unsigned framerate, unsigned flags)
     SDL_Texture *sdlTexture = SDL_CreateTexture(gfx_renderer,
                                             SDL_PIXELFORMAT_INDEX8,
                                             SDL_TEXTUREACCESS_STREAMING,
-                                            xsize, ysize);
+                                            xsize, ysize); //FIXME
     gfx_initexec = 0;
     if (gfx_screen)
     {
@@ -260,7 +260,7 @@ void gfx_setpalette(void)
 {
     if (!gfx_initted) return;
 
-    SDL_SetColors(gfx_screen, &gfx_sdlpalette[0], 0, gfx_maxcolors);
+    SDL_SetPaletteColors(gfx_screen->format->palette, &gfx_sdlpalette[0], 0, gfx_maxcolors);
 }
 
 void gfx_setclipregion(unsigned left, unsigned top, unsigned right, unsigned bottom)

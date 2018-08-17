@@ -143,7 +143,7 @@ void initicon(void)
       io_close(handle);
       rw = SDL_RWFromMem(iconbuffer, size);
       icon = SDL_LoadBMP_RW(rw, 0);
-      SDL_WM_SetIcon(icon, 0);
+      SDL_SetWindowIcon(win_window, icon);
       free(iconbuffer);
     }
   }
@@ -415,7 +415,12 @@ void fliptoscreen(void)
   {
     if (region[y])
     {
-      SDL_UpdateRect(gfx_screen, 0, y*16, MAX_COLUMNS*8, 16);
+      SDL_Rect rect;
+      rect.x = 9;
+      rect.y = y*16;
+      rect.w = MAX_COLUMNS*8;
+      rect.h = 16;
+      SDL_UpdateWindowSurfaceRects(win_window, &rect, 1);
       region[y] = 0;
     }
   }
