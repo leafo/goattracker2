@@ -34,7 +34,7 @@ void win_setmousemode(int mode);
 int win_fullscreen = 0; // By default windowed
 int win_windowinitted = 0;
 int win_quitted = 0;
-unsigned char win_keytable[MAX_KEYS] = {0};
+unsigned char win_keytable[SDL_NUM_SCANCODES] = {0};
 unsigned char win_asciikey = 0;
 unsigned win_virtualkey = 0;
 unsigned win_mousexpos = 0;
@@ -43,7 +43,7 @@ unsigned win_mousexrel = 0;
 unsigned win_mouseyrel = 0;
 unsigned win_mousebuttons = 0;
 int win_mousemode = MOUSE_FULLSCREEN_HIDDEN;
-unsigned char win_keystate[MAX_KEYS] = {0};
+unsigned char win_keystate[SDL_NUM_SCANCODES] = {0};
 
 // Static variables
 
@@ -201,12 +201,13 @@ void win_checkmessages(void)
             case SDL_KEYDOWN:
             win_virtualkey = event.key.keysym.sym;
             win_asciikey = event.key.keysym.scancode;
-            keynum = event.key.keysym.sym;
-            if (keynum < MAX_KEYS)
+            keynum = event.key.keysym.scancode;
+            if (keynum < SDL_NUM_SCANCODES)
             {
                 win_keytable[keynum] = 1;
                 win_keystate[keynum] = 1;
-                if ((keynum == KEY_ENTER) && ((win_keystate[KEY_ALT]) || (win_keystate[KEY_RIGHTALT])))
+                if ((keynum == SDL_SCANCODE_RETURN) && ((win_keystate[SDL_SCANCODE_LALT])
+                    || (win_keystate[SDL_SCANCODE_RALT])))
                 {
                     win_fullscreen ^= 1;
                     gfx_reinit();
@@ -215,8 +216,8 @@ void win_checkmessages(void)
             break;
 
             case SDL_KEYUP:
-            keynum = event.key.keysym.sym;
-            if (keynum < MAX_KEYS)
+            keynum = event.key.keysym.scancode;
+            if (keynum < SDL_NUM_SCANCODES)
             {
                 win_keytable[keynum] = 0;
                 win_keystate[keynum] = 0;

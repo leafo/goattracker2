@@ -59,7 +59,7 @@ int initscreen(void)
     if (!gfx_init(xsize, ysize, 60, 0))
       return 0;
   }
-   
+
   scrbuffer = malloc(MAX_COLUMNS * MAX_ROWS * sizeof(unsigned));
   prevscrbuffer = malloc(MAX_COLUMNS * MAX_ROWS * sizeof(unsigned));
   if ((!scrbuffer) || (!prevscrbuffer)) return 0;
@@ -444,12 +444,12 @@ void getkey(void)
 
   key = win_asciikey;
   rawkey = 0;
-  for (c = 0; c < MAX_KEYS; c++)
+  for (c = 0; c < SDL_NUM_SCANCODES; c++)
   {
     if (win_keytable[c])
     {
-      if ((c != KEY_LEFTSHIFT) && (c != KEY_RIGHTSHIFT) &&
-          (c != KEY_CTRL) && (c != KEY_RIGHTCTRL))
+      if ((c != SDL_SCANCODE_LSHIFT) && (c != SDL_SCANCODE_RSHIFT) &&
+          (c != SDL_SCANCODE_LCTRL) && (c != SDL_SCANCODE_RCTRL))
       {
         rawkey = c;
         win_keytable[c] = 0;
@@ -459,8 +459,8 @@ void getkey(void)
   }
 
   shiftpressed = 0;
-  if ((win_keystate[KEY_LEFTSHIFT])||(win_keystate[KEY_RIGHTSHIFT])||
-      (win_keystate[KEY_CTRL])||(win_keystate[KEY_RIGHTCTRL]))
+  if ((win_keystate[SDL_SCANCODE_LSHIFT])||(win_keystate[SDL_SCANCODE_RSHIFT])||
+      (win_keystate[SDL_SCANCODE_LCTRL])||(win_keystate[SDL_SCANCODE_RCTRL]))
     shiftpressed = 1;
 
   if (rawkey == SDLK_KP_ENTER)
