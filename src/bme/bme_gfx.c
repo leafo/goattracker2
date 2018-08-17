@@ -129,9 +129,11 @@ int gfx_init(unsigned xsize, unsigned ysize, unsigned framerate, unsigned flags)
     gfx_sdlpalette[0].r = 0;
     gfx_sdlpalette[0].g = 0;
     gfx_sdlpalette[0].b = 0;
+    gfx_sdlpalette[0].a = 255;
     gfx_sdlpalette[255].r = 255;
     gfx_sdlpalette[255].g = 255;
     gfx_sdlpalette[255].b = 255;
+    gfx_sdlpalette[255].a = 255;
 
     gfx_screen = SDL_CreateRGBSurface(0, xsize, ysize, 8, 0, 0, 0, 0);
     gfx_renderer = SDL_CreateRenderer(win_window, -1, sdlflags);
@@ -257,6 +259,8 @@ void gfx_calcpalette(int fade, int radd, int gadd, int badd)
         if (cl < 0) cl = 0;
         gfx_sdlpalette[c].b = (cl << 2) | (cl & 3);
         sptr++;
+
+        gfx_sdlpalette[c].a = 255;
     }
 }
 
