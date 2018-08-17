@@ -78,6 +78,7 @@ int win_openwindow(unsigned xsize, unsigned ysize, char *appname, char *icon)
 
 void win_closewindow(void)
 {
+    SDL_DestroyWindow(win_window);
 }
 
 void win_messagebox(char *string)

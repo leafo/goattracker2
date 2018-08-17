@@ -72,7 +72,7 @@ static Uint8 **gfx_spritedata = NULL;
 static unsigned *gfx_spriteamount = NULL;
 static SDL_Color gfx_sdlpalette[MAX_COLORS];
 static int gfx_locked = 0;
-static SDL_Texture *sdlTexture;
+static SDL_Texture *sdlTexture = NULL;
 
 int gfx_init(unsigned xsize, unsigned ysize, unsigned framerate, unsigned flags)
 {
@@ -135,7 +135,7 @@ int gfx_init(unsigned xsize, unsigned ysize, unsigned framerate, unsigned flags)
     gfx_sdlpalette[255].b = 255;
     gfx_sdlpalette[255].a = 255;
 
-    gfx_screen = SDL_CreateRGBSurface(0, xsize, ysize, 8, 0, 0, 0, 0);
+    gfx_screen = SDL_CreateRGBSurfaceWithFormat(0, xsize, ysize, 8, SDL_PIXELFORMAT_INDEX8);
     gfx_renderer = SDL_CreateRenderer(win_window, -1, sdlflags);
     sdlTexture = SDL_CreateTexture(gfx_renderer,
                                             SDL_PIXELFORMAT_INDEX8,
@@ -161,6 +161,8 @@ int gfx_reinit(void)
 
 void gfx_uninit(void)
 {
+    SDL_DestroyTexture(sdlTexture);
+    SDL_DestroyRenderer(gfx_renderer);
     gfx_initted = 0;
     return;
 }
