@@ -141,7 +141,7 @@ int gfx_init(unsigned xsize, unsigned ysize, unsigned framerate, unsigned flags)
 //                                             SDL_PIXELFORMAT_INDEX8,
 //                                             SDL_TEXTUREACCESS_STREAMING,
 //                                             xsize, ysize);
-    sdlTexture = SDL_CreateTextureFromSurface(gfx_renderer, gfx_screen);
+    //sdlTexture = SDL_CreateTextureFromSurface(gfx_renderer, gfx_screen);
 
     gfx_initexec = 0;
     if (gfx_screen)
@@ -192,7 +192,8 @@ void gfx_unlock(void)
 
 void gfx_flip()
 {
-    SDL_UpdateTexture(sdlTexture, NULL, gfx_screen->pixels, gfx_screen->pitch);
+    //SDL_UpdateTexture(sdlTexture, NULL, gfx_screen->pixels, gfx_screen->pitch);
+    sdlTexture = SDL_CreateTextureFromSurface(gfx_renderer, gfx_screen); // FIXME
     SDL_RenderClear(gfx_renderer);
     SDL_RenderCopy(gfx_renderer, sdlTexture, NULL, NULL);
     SDL_RenderPresent(gfx_renderer);
