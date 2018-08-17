@@ -72,6 +72,7 @@ static Uint8 **gfx_spritedata = NULL;
 static unsigned *gfx_spriteamount = NULL;
 static SDL_Color gfx_sdlpalette[MAX_COLORS];
 static int gfx_locked = 0;
+static SDL_Texture *sdlTexture;
 
 int gfx_init(unsigned xsize, unsigned ysize, unsigned framerate, unsigned flags)
 {
@@ -134,10 +135,10 @@ int gfx_init(unsigned xsize, unsigned ysize, unsigned framerate, unsigned flags)
 
     gfx_screen = SDL_CreateRGBSurface(0, xsize, ysize, 8, 0, 0, 0, 0);
     gfx_renderer = SDL_CreateRenderer(win_window, -1, sdlflags);
-    SDL_Texture *sdlTexture = SDL_CreateTexture(gfx_renderer,
+    sdlTexture = SDL_CreateTexture(gfx_renderer,
                                             SDL_PIXELFORMAT_INDEX8,
                                             SDL_TEXTUREACCESS_STREAMING,
-                                            xsize, ysize); //FIXME
+                                            xsize, ysize);
     gfx_initexec = 0;
     if (gfx_screen)
     {
@@ -185,6 +186,9 @@ void gfx_unlock(void)
 
 void gfx_flip()
 {
+    SDL_UpdateTexture(sdlTexture, NULL, gfx_screen->pixels, gfx_screen->pitch);
+    SDL_RenderClear(gfx_renderer);
+    SDL_RenderCopy(gfx_renderer, sdlTexture, NULL, NULL);
     SDL_RenderPresent(gfx_renderer);
     gfx_redraw = 0;
 }
