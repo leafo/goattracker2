@@ -1,5 +1,5 @@
 //
-// GOATTRACKER v2.73
+// GOATTRACKER v2.74
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ unsigned sidmodel = 0;
 unsigned multiplier = 1;
 unsigned adparam = 0x0f00;
 unsigned ntsc = 0;
-unsigned patternhex = 0;
+unsigned patterndispmode = 0;
 unsigned sidaddress = 0xd400;
 unsigned finevibrato = 1;
 unsigned optimizepulse = 1;
@@ -76,7 +76,7 @@ char instrfilter[MAX_FILENAME];
 char instrpath[MAX_PATHNAME];
 char packedpath[MAX_PATHNAME];
 
-char *programname = "$VER: GoatTracker v2.73";
+char *programname = "$VER: GoatTracker v2.74";
 
 char textbuffer[MAX_PATHNAME];
 
@@ -91,7 +91,7 @@ char* usage[] = {
     "-Axx Set ADSR parameter for hardrestart in hex. DEFAULT=0F00",
     "-Bxx Set sound buffer length in milliseconds DEFAULT=100",
     "-Cxx Use CatWeasel MK3 PCI SID (0 = off, 1 = on)",
-    "-Dxx Pattern row display (0 = decimal, 1 = hexadecimal)",
+    "-Dxx Pattern row display (0 = decimal, 1 = hex, 2 = decimal w/dots, 3 = hex w/dots)",
     "-Exx Set emulated SID model (0 = 6581 1 = 8580) DEFAULT=6581",
     "-Fxx Set custom SID clock cycles per second (0 = use PAL/NTSC default)",
     "-Gxx Set pitch of A-4 in Hz (0 = use default frequencytable, close to 440Hz)",
@@ -157,7 +157,7 @@ int main(int argc, char **argv)
     getparam(configfile, &catweasel);
     getparam(configfile, &adparam);
     getparam(configfile, &interpolate);
-    getparam(configfile, &patternhex);
+    getparam(configfile, &patterndispmode);
     getparam(configfile, &sidaddress);
     getparam(configfile, &finevibrato);
     getparam(configfile, &optimizepulse);
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
     getfloatparam(configfile, &filterparams.type4k);
     getfloatparam(configfile, &filterparams.type4b);
     getfloatparam(configfile, &filterparams.voicenonlinearity);
-    getparam(configfile, &win_fullscreen);
+    getparam(configfile, (unsigned*)&win_fullscreen);
     getfloatparam(configfile, &basepitch);
     fclose(configfile);
   }
@@ -236,7 +236,7 @@ int main(int argc, char **argv)
         break;
 
         case 'D':
-        sscanf(&argv[c][2], "%u", &patternhex);
+        sscanf(&argv[c][2], "%u", &patterndispmode);
         break;
 
         case 'E':
@@ -419,7 +419,7 @@ int main(int argc, char **argv)
                         ";Use CatWeasel SID (0 = off, 1 = on)\n%d\n\n"
                         ";Hardrestart ADSR parameter\n$%04x\n\n"
                         ";reSID interpolation (0 = off, 1 = on, 2 = distortion, 3 = distortion & on)\n%d\n\n"
-                        ";Hexadecimal pattern display (0 = off, 1 = on)\n%d\n\n"
+                        ";Pattern display mode (0 = decimal, 1 = hex, 2 = decimal w/dots, 3 = hex w/dots)\n%d\n\n"
                         ";SID baseaddress\n$%04x\n\n"
                         ";Finevibrato mode (0 = off, 1 = on)\n%d\n\n"
                         ";Pulseskipping (0 = off, 1 = on)\n%d\n\n"
@@ -455,7 +455,7 @@ int main(int argc, char **argv)
     catweasel,
     adparam,
     interpolate,
-    patternhex,
+    patterndispmode,
     sidaddress,
     finevibrato,
     optimizepulse,

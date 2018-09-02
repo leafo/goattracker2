@@ -26,6 +26,8 @@
  * This file is a part of the Exomizer v1.1 release
  *
  */
+ 
+// Modified for GoatTracker2 to compile with -Werror=format-security
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -132,7 +134,7 @@ void raw_log_formatter(FILE * out,      /* IN */
                        const char *context,     /* IN */
                        const char *log) /* IN */
 {
-    fprintf(out, log);
+    fprintf(out, "%s", log);
     fflush(out);
 }
 

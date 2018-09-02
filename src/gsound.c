@@ -195,7 +195,7 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
     goto SOUNDOK;
   }
 
-  if (!buffer) buffer = malloc(MIXBUFFERSIZE * sizeof(Sint16));
+  if (!buffer) buffer = (Sint16*)malloc(MIXBUFFERSIZE * sizeof(Sint16));
   if (!buffer) return 0;
 
   if (writer)

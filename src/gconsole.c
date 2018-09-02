@@ -58,13 +58,13 @@ int initscreen(void)
       return 0;
   }
    
-  scrbuffer = malloc(MAX_COLUMNS * MAX_ROWS * sizeof(unsigned));
-  prevscrbuffer = malloc(MAX_COLUMNS * MAX_ROWS * sizeof(unsigned));
+  scrbuffer = (unsigned*)malloc(MAX_COLUMNS * MAX_ROWS * sizeof(unsigned));
+  prevscrbuffer = (unsigned*)malloc(MAX_COLUMNS * MAX_ROWS * sizeof(unsigned));
   if ((!scrbuffer) || (!prevscrbuffer)) return 0;
 
   memset(region, 0, sizeof region);
 
-  chardata = malloc(4096);
+  chardata = (unsigned char*)malloc(4096);
   if (!chardata) return 0;
   handle = io_open("chargen.bin");
   if (handle == -1) return 0;
@@ -134,7 +134,7 @@ void initicon(void)
 
     size = io_lseek(handle, 0, SEEK_END);
     io_lseek(handle, 0, SEEK_SET);
-    iconbuffer = malloc(size);
+    iconbuffer = (char*)malloc(size);
     if (iconbuffer)
     {
       io_read(handle, iconbuffer, size);
@@ -355,7 +355,7 @@ void fliptoscreen(void)
 
         {
           unsigned char *chptr = &chardata[(*sptr & 0xffff)*16];
-          unsigned char *dptr = gfx_screen->pixels + y*16 * gfx_screen->pitch + x*8;
+          unsigned char *dptr = (unsigned char*)gfx_screen->pixels + y*16 * gfx_screen->pitch + x*8;
           unsigned char bgcolor = (*sptr) >> 20;
           unsigned char fgcolor = ((*sptr) >> 16) & 0xf;
           int c;

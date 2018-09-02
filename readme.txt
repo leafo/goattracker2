@@ -1,4 +1,4 @@
-GoatTracker v2.73
+GoatTracker v2.74
 -----------------
 
 Editor by Lasse Öörni (loorni@gmail.com)
@@ -203,7 +203,7 @@ model 8580 and to load "dojo.sng" on startup.
 -Axx Set hard restart ADSR parameter in hex. DEFAULT=0F00
 -Bxx Set sound buffer length in milliseconds DEFAULT=100
 -Cxx Use CatWeasel MK3 PCI SID (0 = off, 1 = on)
--Dxx Pattern row display (0 = decimal, 1 = hexadecimal)
+-Dxx Pattern row display (0 = decimal, 1 = hex, 2 = decimal w/dots, 3 = hex w/dots)
 -Exx Set emulated SID model (0 = 6581 1 = 8580) DEFAULT=6581
 -Fxx Set custom SID clock cycles per second (0 = use PAL/NTSC default)
 -Gxx Set pitch of A-4 in Hz (0 = use default frequencytable, close to 440Hz)
@@ -259,6 +259,9 @@ Hard restart parameter with attack at maximum (F) enables the use of an
 alternative playroutine, where waveform is written before ADSR. This can give
 more reliable note triggering, especially for very fast releases 0 & 1, but 
 may change the characteristics of the note's decay & release.
+
+The dotted pattern display modes (-D2 and -D3) display dots in the instrument
+and command column for zero instrument (no change) or zero command (no command.)
 
 2.2 Hardware support
 --------------------
@@ -1914,3 +1917,7 @@ v2.73     - Reverted to old playroutine timing.
           - Merge song functionality (SHIFT+F10.)
           - Help text is written to console on non-Win32 platforms.
           - gt2reloc utility by Groepaz.
+          
+v2.74     - Fix track length not properly updated when swapping tracks.
+          - Fix track length not properly updated if merge-load fails.
+          - Added dotted pattern display modes (-D2 and -D3.)

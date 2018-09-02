@@ -1730,11 +1730,11 @@ void mergesong(void)
             pattern[c + pattbase][d + 3] += tablebase[STBL];
         }
       }
-      countpatternlengths();
-      songchange();
     }
   }
 
   ABORT:
   fclose(handle);
+  countpatternlengths();
+  songchange();
 }

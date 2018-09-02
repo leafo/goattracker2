@@ -64,7 +64,7 @@ extern unsigned sidmodel;
 extern unsigned multiplier;
 extern unsigned adparam;
 extern unsigned ntsc;
-extern unsigned patternhex;
+extern unsigned patterndispmode;
 extern unsigned sidaddress;
 extern unsigned finevibrato;
 extern unsigned optimizepulse;

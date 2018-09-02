@@ -33,6 +33,9 @@
    define necessary library symbols; they are noted "INFRINGES ON
    USER NAME SPACE" below.  */
 
+int yylex(void);
+int yyerror (char *s);
+
 /* Identify Bison output.  */
 #define YYBISON 1
 

@@ -156,7 +156,7 @@ void printstatus(void)
       }
       else
       {
-        if (!patternhex)
+        if (!(patterndispmode & 1))
         {
           if (p < 100)
             sprintf(textbuffer, " %02d", p);
@@ -178,6 +178,13 @@ void printstatus(void)
             pattern[epnum[c]][p*4+1],
             pattern[epnum[c]][p*4+2],
             pattern[epnum[c]][p*4+3]);
+          if (patterndispmode & 2)
+          {
+            if (!pattern[epnum[c]][p*4+1])
+              memset(&textbuffer[8], '.', 2);
+            if (!pattern[epnum[c]][p*4+2])
+              memset(&textbuffer[10], '.', 3);
+          }
         }
       }
       textbuffer[3] = 0;

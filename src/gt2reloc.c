@@ -48,7 +48,7 @@ unsigned sidmodel = 0;
 unsigned multiplier = 1;
 unsigned adparam = 0x0f00;
 unsigned ntsc = 0;
-unsigned patternhex = 0;
+unsigned patterndispmode = 0;
 unsigned sidaddress = 0xd400;
 unsigned finevibrato = 1;
 unsigned optimizepulse = 1;
@@ -438,3 +438,7 @@ void calculatefreqtable()
     freqtblhi[c] = intfreq >> 8;
   }
 }
+
+#define GT2RELOC
+
+#include "greloc.c"

@@ -637,7 +637,7 @@ void relocator(void)
 
   // Allocate memory for song-orderlists
   songtblsize = songs*6;
-  songwork = malloc(songdatasize);
+  songwork = (unsigned char*)malloc(songdatasize);
   if (!songwork)
   {
     clearscreen();
@@ -727,7 +727,7 @@ void relocator(void)
   }
 
   patttblsize = patterns*2;
-  pattwork = malloc(pattdatasize);
+  pattwork = (unsigned char*)malloc(pattdatasize);
   if (!pattwork)
   {
     clearscreen();
@@ -753,7 +753,7 @@ void relocator(void)
 
   // Then process instruments
   instrsize = instruments*9;
-  instrwork = malloc(instrsize);
+  instrwork = (unsigned char*)malloc(instrsize);
   if (!instrwork)
   {
     clearscreen();
@@ -1402,7 +1402,7 @@ void relocator(void)
   // Assemble; on error fail in a rude way (the parser does so too)
   if (assemble(&src, &dest)) exit(1);
 
-  packeddata = membuf_get(&dest);
+  packeddata = (unsigned char*)membuf_get(&dest);
   packedsize = membuf_memlen(&dest);
   playersize = packedsize - songtblsize - songdatasize - patttblsize - pattdatasize - instrsize - wavetblsize - pulsetblsize - filttblsize - speedtblsize;
 

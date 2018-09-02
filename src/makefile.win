@@ -4,7 +4,7 @@
 
 PREFIX=../win32/
 SUFFIX=.exe
-LIBS=-lmingw32 -lSDLmain -lSDL -static-libstdc++ -static-libgcc -static
+LIBS=-lmingw32 -lSDLmain -lSDL.dll -static-libstdc++ -static-libgcc -static
 RM=	-del
 
 include makefile.common

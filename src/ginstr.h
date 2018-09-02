@@ -2,10 +2,10 @@
 #define GINSTR_H
 
 #ifndef GINSTR_C
-int einum;
-int eipos;
-int eicolumn;
-INSTR instrcopybuffer;
+extern int einum;
+extern int eipos;
+extern int eicolumn;
+extern INSTR instrcopybuffer;
 #endif
 
 void instrumentcommands(void);

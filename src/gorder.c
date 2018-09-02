@@ -146,6 +146,10 @@ void orderlistcommands(void)
       if (rawkey == KEY_3) tchn = 2;
       if (schn != tchn)
       {
+        int lentemp = songlen[esnum][schn];
+        songlen[esnum][schn] = songlen[esnum][tchn];
+        songlen[esnum][tchn] = lentemp;
+
         for (c = 0; c < MAX_SONGLEN+2; c++)
         {
           unsigned char temp = songorder[esnum][schn][c];
