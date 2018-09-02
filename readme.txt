@@ -1918,6 +1918,6 @@ v2.73     - Reverted to old playroutine timing.
           - Help text is written to console on non-Win32 platforms.
           - gt2reloc utility by Groepaz.
           
-v2.74     - Fix track length not properly updated when swapping tracks.
-          - Fix track length not properly updated if merge-load fails.
+v2.74     - Fixed track length not properly updated when swapping tracks.
+          - Fixed track length not properly updated if merge-load fails.
           - Added dotted pattern display modes (-D2 and -D3.)
