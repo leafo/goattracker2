@@ -9,7 +9,6 @@ EXE=	$(PREFIX)goattrk2$(SUFFIX) \
 	$(PREFIX)gt2reloc$(SUFFIX) \
 	$(PREFIX)ins2snd2$(SUFFIX) \
 	$(PREFIX)sngspli2$(SUFFIX) \
-	$(PREFIX)betaconv$(SUFFIX) \
 	$(PREFIX)mod2sng$(SUFFIX)
 
 all: $(EXE)
@@ -47,10 +46,6 @@ $(PREFIX)ins2snd2$(SUFFIX): ins2snd2.o bme/bme_end.o
 	strip $@
 
 $(PREFIX)sngspli2$(SUFFIX): sngspli2.o bme/bme_end.o
-	$(CC) -o $@ $^
-	strip $@
-
-$(PREFIX)betaconv$(SUFFIX): betaconv.o bme/bme_end.o
 	$(CC) -o $@ $^
 	strip $@
 

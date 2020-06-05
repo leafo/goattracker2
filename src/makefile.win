@@ -2,6 +2,8 @@
 # Win32 makefile
 #
 
+CC:=gcc
+CXX:=g++
 PREFIX=../win32/
 SUFFIX=.exe
 LIBS=-lmingw32 -lSDLmain -lSDL.dll -static-libstdc++ -static-libgcc -static

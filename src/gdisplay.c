@@ -15,7 +15,7 @@ char *notename[] =
   "C-5", "C#5", "D-5", "D#5", "E-5", "F-5", "F#5", "G-5", "G#5", "A-5", "A#5", "B-5",
   "C-6", "C#6", "D-6", "D#6", "E-6", "F-6", "F#6", "G-6", "G#6", "A-6", "A#6", "B-6",
   "C-7", "C#7", "D-7", "D#7", "E-7", "F-7", "F#7", "G-7", "G#7", "...", "---", "+++"};
-  
+
 char timechar[] = {':', ' '};
 
 int timemin = 0;
@@ -43,7 +43,7 @@ void displayupdate(void)
 
 void printstatus(void)
 {
-  int c, d, color;
+  int c, d, color, color2;
   int cc = cursorcolortable[cursorflash];
   menu = 0;
 
@@ -196,7 +196,14 @@ void printstatus(void)
       {
         printtext(2+c*15, 3+d, CCOMMAND, textbuffer);
       }
-      printtext(6+c*15, 3+d, color, &textbuffer[4]);
+      if (color == CNORMAL)
+        color2 = CCOMMAND;
+      else
+        color2 = color;
+      printtext(6+c*15, 3+d, color2, &textbuffer[4]);
+      printtext(10+c*15, 3+d, color, &textbuffer[8]);
+      printtext(12+c*15, 3+d, color2, &textbuffer[10]);
+      printtext(13+c*15, 3+d, color, &textbuffer[11]);
       if (c == epmarkchn)
       {
         if (epmarkstart <= epmarkend)
