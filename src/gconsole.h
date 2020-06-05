@@ -5,8 +5,6 @@
 #define MAX_ROWS 37
 #define HOLDDELAY 24
 #define DOUBLECLICKDELAY 15
-#define MOUSESIZEX 11
-#define MOUSESIZEY 20
 
 int initscreen(void);
 void closescreen(void);
@@ -26,6 +24,7 @@ extern int key, rawkey, shiftpressed, cursorflashdelay;
 extern int mouseb, prevmouseb;
 extern int mouseheld;
 extern int mousex, mousey;
+extern unsigned bigwindow;
 #endif
 
 #endif

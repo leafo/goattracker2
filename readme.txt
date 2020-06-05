@@ -1990,3 +1990,4 @@ v2.75     - Added /Q command line option for setting equal divisions per octave
           - Added isomorphic key layout.
           - Removed the BETACONV utility, as it references a very old songformat
             and also saved in another old format.
+          - Added /w command line option for setting 4 different window sizes.

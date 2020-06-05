@@ -68,6 +68,7 @@ float basepitch = 0.0f;
 float equaldivisionsperoctave = 12.0f;
 int tuningcount = 0;
 double tuning[96];
+extern unsigned bigwindow;
 
 char configbuf[MAX_PATHNAME];
 char loadedsongfilename[MAX_FILENAME];
@@ -117,6 +118,7 @@ char* usage[] = {
     "-Xxx Set window type (0 = window, 1 = fullscreen) DEFAULT=window",
     "-Yxx Path to a Scala tuning file .scl",
     "-Zxx Set random reSID write delay in cycles (0 = off) DEFAULT=off",
+    "-wxx Set window scale factor (1 = no scaling, 2 to 4 = 2 to 4 times bigger window) DEFAULT=1",
     "-N   Use NTSC timing",
     "-P   Use PAL timing (DEFAULT)",
     "-W   Write sound output to a file SIDAUDIO.RAW",
@@ -186,6 +188,7 @@ int main(int argc, char **argv)
     getfloatparam(configfile, &filterparams.type4b);
     getfloatparam(configfile, &filterparams.voicenonlinearity);
     getparam(configfile, (unsigned*)&win_fullscreen);
+    getparam(configfile, &bigwindow);
     getfloatparam(configfile, &basepitch);
     getfloatparam(configfile, &equaldivisionsperoctave);
     getstringparam(configfile, specialnotenames);
@@ -206,7 +209,7 @@ int main(int argc, char **argv)
     #endif
     {
       int y;
-      switch(toupper(argv[c][1]))
+      switch (argv[c][1]) //switch (toupper(argv[c][1]))
       {
         case '-':
         if (strcmp(argv[c], "--help"))
@@ -335,6 +338,10 @@ int main(int argc, char **argv)
   
         case 'Y':
         sscanf(&argv[c][2], "%s", scalatuningfilepath);
+        break;
+  
+        case 'w':
+        sscanf(&argv[c][2], "%u", &bigwindow);
         break;
       }
     }
@@ -475,6 +482,7 @@ int main(int argc, char **argv)
                         ";reSID-fp type 4 b\n%f\n\n"
                         ";reSID-fp voice nonlinearity\n%f\n\n"
                         ";Window type (0 = window, 1 = fullscreen)\n%d\n\n"
+                                    ";window scale factor (1 = no scaling, 2 to 4 = 2 to 4 times bigger window)\n%d\n\n"
                         ";Base pitch of A-4 in Hz (0 = use default frequencytable)\n%f\n\n"
                         ";Equal divisions per octave (12 = default, 8.2019143 = Bohlen-Pierce)\n%f\n\n"
                                    ";Special note names (2 chars for every note in an octave/cycle)\n%s\n\n"
@@ -514,6 +522,7 @@ int main(int argc, char **argv)
     filterparams.type4b,
     filterparams.voicenonlinearity,
     win_fullscreen,
+    bigwindow,
     basepitch,
      equaldivisionsperoctave,
      specialnotenames,

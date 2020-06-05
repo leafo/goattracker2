@@ -73,7 +73,7 @@ $(PREFIX)betaconv$(SUFFIX): betaconv.o bme/bme_end.o
 	$(CC) -o $@ $^
 	strip $@
 
-goattrk2.dat: player.s altplayer.s chargen.bin palette.bin cursor.bin goattrk2.bmp goattrk2.seq
+goattrk2.dat: player.s altplayer.s chargen.bin palette.bin cursor.bin bcursor.bin goattrk2.bmp goattrk2.seq
 	datafile $@ goattrk2.seq
 
 goatdata.c: goattrk2.dat
