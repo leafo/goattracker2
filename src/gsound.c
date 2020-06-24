@@ -19,10 +19,11 @@ int firsttimeinit = 1;
 unsigned framerate = PALFRAMERATE;
 Sint16 *buffer = NULL;
 FILE *writehandle = NULL;
+SDL_TimerID timer = 0;
 
 void sound_playrout(void);
 void sound_mixer(Sint32 *dest, unsigned samples);
-Uint32 sound_timer(Uint32 interval);
+Uint32 sound_timer(Uint32 interval, void *param);
 
 #ifdef __WIN32__
 
@@ -141,7 +142,7 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
     else return 0;
     if (!cycleexacthardsid)
     {
-      SDL_SetTimer(1000 / framerate, sound_timer);
+      timer = SDL_AddTimer(1000 / framerate, sound_timer, NULL);
     }
     else
     {
@@ -163,7 +164,7 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
       }
     }
     else return 0;
-    SDL_SetTimer(1000 / framerate, sound_timer);
+    timer = SDL_AddTimer(1000 / framerate, sound_timer, NULL);
     #endif
 
     goto SOUNDOK;
@@ -191,7 +192,7 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
     #endif
 
     usecatweasel = 1;
-    SDL_SetTimer(1000 / framerate, sound_timer);
+    timer = SDL_AddTimer(1000 / framerate, sound_timer, NULL);
     goto SOUNDOK;
   }
 
@@ -239,7 +240,7 @@ void sound_uninit(void)
     #ifdef __WIN32__
     if (!playerthread)
     {
-      SDL_SetTimer(0, NULL);
+      SDL_RemoveTimer(timer);
     }
     else
     {
@@ -248,7 +249,7 @@ void sound_uninit(void)
       playerthread = NULL;
     }
     #else
-    SDL_SetTimer(0, NULL);
+    SDL_RemoveTimer(timer);
     #endif
   }
   else
@@ -341,7 +342,7 @@ void sound_flush(void)
   #endif
 }
 
-Uint32 sound_timer(Uint32 interval)
+Uint32 sound_timer(Uint32 interval, void *param)
 {
   if (!initted) return interval;
   sound_playrout();

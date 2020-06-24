@@ -49,6 +49,8 @@ inline void setcolor(unsigned *dptr, short color)
 int initscreen(void)
 {
   int handle;
+  unsigned xsize = MAX_COLUMNS * 8;
+  unsigned ysize = MAX_ROWS * 16;
 
   if (bigwindow - 1)
   {
@@ -60,7 +62,7 @@ int initscreen(void)
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0)
     return 0;
-  win_openwindow("GoatTracker", NULL);
+  win_openwindow(xsize, ysize, "GoatTracker", NULL);
   win_setmousemode(MOUSE_ALWAYS_HIDDEN);
   initicon();
 
@@ -155,7 +157,7 @@ void initicon(void)
       io_close(handle);
       rw = SDL_RWFromMem(iconbuffer, size);
       icon = SDL_LoadBMP_RW(rw, 0);
-      SDL_WM_SetIcon(icon, 0);
+      SDL_SetWindowIcon(win_window, icon);
       free(iconbuffer);
     }
   }
@@ -572,14 +574,21 @@ void fliptoscreen(void)
 
   // Redraw changed screen regions
   gfx_unlock();
-  for (y = 0; y < MAX_ROWS; y++)
-  {
-    if (region[y])
-    {
-      SDL_UpdateRect(gfx_screen, 0, y*fontheight, MAX_COLUMNS*fontwidth, fontheight);
-      region[y] = 0;
-    }
-  }
+//   for (y = 0; y < MAX_ROWS; y++)
+//   {
+//     if (region[y])
+//     {
+//       SDL_Rect rect;
+//       rect.x = 0;
+//       rect.y = y*16;
+//       rect.w = MAX_COLUMNS*8;
+//       rect.h = 16;
+//       SDL_UpdateTexture(sdlTexture, &rect, gfx_screen->pixels + y*16 + x*8, gfx_screen->pitch);
+//       region[y] = 0;
+//     }
+//   }
+
+  gfx_flip();
 }
 
 void getkey(void)
@@ -600,12 +609,12 @@ void getkey(void)
 
   key = win_asciikey;
   rawkey = 0;
-  for (c = 0; c < MAX_KEYS; c++)
+  for (c = 0; c < SDL_NUM_SCANCODES; c++)
   {
     if (win_keytable[c])
     {
-      if ((c != KEY_LEFTSHIFT) && (c != KEY_RIGHTSHIFT) &&
-          (c != KEY_CTRL) && (c != KEY_RIGHTCTRL))
+      if ((c != SDL_SCANCODE_LSHIFT) && (c != SDL_SCANCODE_RSHIFT) &&
+          (c != SDL_SCANCODE_LCTRL) && (c != SDL_SCANCODE_RCTRL))
       {
         rawkey = c;
         win_keytable[c] = 0;
@@ -615,24 +624,24 @@ void getkey(void)
   }
 
   shiftpressed = 0;
-  if ((win_keystate[KEY_LEFTSHIFT])||(win_keystate[KEY_RIGHTSHIFT])||
-      (win_keystate[KEY_CTRL])||(win_keystate[KEY_RIGHTCTRL]))
+  if ((win_keystate[SDL_SCANCODE_LSHIFT])||(win_keystate[SDL_SCANCODE_RSHIFT])||
+      (win_keystate[SDL_SCANCODE_LCTRL])||(win_keystate[SDL_SCANCODE_RCTRL]))
     shiftpressed = 1;
 
-  if (rawkey == SDLK_KP_ENTER)
+  if (rawkey == SDL_SCANCODE_KP_ENTER)
   {
     key = KEY_ENTER;
-    rawkey = SDLK_RETURN;
+    rawkey = SDL_SCANCODE_RETURN;
   }
 
-  if (rawkey == SDLK_KP0) key = '0';
-  if (rawkey == SDLK_KP1) key = '1';
-  if (rawkey == SDLK_KP2) key = '2';
-  if (rawkey == SDLK_KP3) key = '3';
-  if (rawkey == SDLK_KP4) key = '4';
-  if (rawkey == SDLK_KP5) key = '5';
-  if (rawkey == SDLK_KP6) key = '6';
-  if (rawkey == SDLK_KP7) key = '7';
-  if (rawkey == SDLK_KP8) key = '8';
-  if (rawkey == SDLK_KP9) key = '9';
+  if (rawkey == SDL_SCANCODE_KP_0) key = '0';
+  if (rawkey == SDL_SCANCODE_KP_1) key = '1';
+  if (rawkey == SDL_SCANCODE_KP_2) key = '2';
+  if (rawkey == SDL_SCANCODE_KP_3) key = '3';
+  if (rawkey == SDL_SCANCODE_KP_4) key = '4';
+  if (rawkey == SDL_SCANCODE_KP_5) key = '5';
+  if (rawkey == SDL_SCANCODE_KP_6) key = '6';
+  if (rawkey == SDL_SCANCODE_KP_7) key = '7';
+  if (rawkey == SDL_SCANCODE_KP_8) key = '8';
+  if (rawkey == SDL_SCANCODE_KP_9) key = '9';
 }
