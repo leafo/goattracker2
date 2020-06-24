@@ -574,20 +574,6 @@ void fliptoscreen(void)
 
   // Redraw changed screen regions
   gfx_unlock();
-//   for (y = 0; y < MAX_ROWS; y++)
-//   {
-//     if (region[y])
-//     {
-//       SDL_Rect rect;
-//       rect.x = 0;
-//       rect.y = y*16;
-//       rect.w = MAX_COLUMNS*8;
-//       rect.h = 16;
-//       SDL_UpdateTexture(sdlTexture, &rect, gfx_screen->pixels + y*16 + x*8, gfx_screen->pitch);
-//       region[y] = 0;
-//     }
-//   }
-
   gfx_flip();
 }
 
