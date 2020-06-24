@@ -137,11 +137,10 @@ int gfx_init(unsigned xsize, unsigned ysize, unsigned framerate, unsigned flags)
 
     gfx_renderer = SDL_CreateRenderer(win_window, -1, sdlflags);
     gfx_screen = SDL_CreateRGBSurfaceWithFormat(0, xsize, ysize, 8, SDL_PIXELFORMAT_INDEX8);
-//     sdlTexture = SDL_CreateTexture(gfx_renderer,
-//                                             SDL_PIXELFORMAT_INDEX8,
-//                                             SDL_TEXTUREACCESS_STREAMING,
-//                                             xsize, ysize);
-    //sdlTexture = SDL_CreateTextureFromSurface(gfx_renderer, gfx_screen);
+    sdlTexture = SDL_CreateTexture(gfx_renderer,
+                                             SDL_PIXELFORMAT_RGBA32,
+                                             SDL_TEXTUREACCESS_STREAMING,
+                                             xsize, ysize);
 
     gfx_initexec = 0;
     if (gfx_screen)
@@ -164,6 +163,7 @@ int gfx_reinit(void)
 void gfx_uninit(void)
 {
     SDL_DestroyTexture(sdlTexture);
+    SDL_FreeSurface(gfx_screen);
     SDL_DestroyRenderer(gfx_renderer);
     gfx_initted = 0;
     return;
@@ -192,8 +192,9 @@ void gfx_unlock(void)
 
 void gfx_flip()
 {
-    //SDL_UpdateTexture(sdlTexture, NULL, gfx_screen->pixels, gfx_screen->pitch);
-    sdlTexture = SDL_CreateTextureFromSurface(gfx_renderer, gfx_screen); // FIXME
+    SDL_Surface* surf = SDL_ConvertSurfaceFormat(gfx_screen, SDL_PIXELFORMAT_RGBA32, 0);
+    SDL_UpdateTexture(sdlTexture, NULL, surf->pixels, surf->pitch);
+    SDL_FreeSurface(surf);
     SDL_RenderClear(gfx_renderer);
     SDL_RenderCopy(gfx_renderer, sdlTexture, NULL, NULL);
     SDL_RenderPresent(gfx_renderer);
