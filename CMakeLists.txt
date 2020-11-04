@@ -123,6 +123,8 @@ IF(JACK)
     ADD_DEFINITIONS(-DUSE_JACK)
 ENDIF(JACK)
 
+SET_SOURCE_FILES_PROPERTIES(src/resid-fp/sidfp.cpp PROPERTIES COMPILE_FLAGS "-fpermissive")
+
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/bme)
 include_directories(${CMAKE_SOURCE_DIR}/src/asm)
