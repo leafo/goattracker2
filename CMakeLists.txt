@@ -133,9 +133,16 @@ add_executable(datafile src/bme/datafile.c src/bme/bme_end.c)
 add_executable(dat2inc src/bme/dat2inc.c)
 
 add_custom_command(
-  OUTPUT goatdata.c
+  OUTPUT goattrk2.dat
+  COMMAND datafile goattrk2.dat goattrk2.seq
+  DEPENDS datafile
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
+  )
+
+add_custom_command(
+  OUTPUT ${CMAKE_SOURCE_DIR}/src/goatdata.c
   COMMAND dat2inc goattrk2.dat goatdata.c
-  DEPENDS dat2inc
+  DEPENDS dat2inc goattrk2.dat
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
   )
 
