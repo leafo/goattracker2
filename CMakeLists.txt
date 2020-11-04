@@ -33,7 +33,7 @@ set(GOATTRK2_SOURCES
     src/resid-fp/potfp.cpp
     src/resid-fp/sidfp.cpp
     src/resid-fp/wavefp.cpp
-    src/resid-fp/voicefp.o
+    src/resid-fp/voicefp.cpp
     src/asm/asmtab.c
     src/asm/chnkpool.c
     src/asm/expr.c
@@ -126,6 +126,16 @@ ENDIF(JACK)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/bme)
 include_directories(${CMAKE_SOURCE_DIR}/src/asm)
+
+add_executable(datafile src/bme/datafile.c src/bme/bme_end.c)
+add_executable(dat2inc src/bme/dat2inc.c)
+
+add_custom_command(
+  OUTPUT goatdata.c
+  COMMAND dat2inc goattrk2.dat goatdata.c
+  DEPENDS dat2inc
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
+  )
 
 add_executable(goattrk2 ${GOATTRK2_SOURCES})
 add_executable(gt2reloc ${GT2RELOC_SOURCES})
