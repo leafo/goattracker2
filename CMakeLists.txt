@@ -154,14 +154,9 @@ add_executable(sngspli2 ${SNGSPLI2_SOURCES})
 
 target_compile_definitions(gt2reloc PUBLIC -DGT2RELOC)
 
-set(SDL_BUILDING_LIBRARY TRUE)
 find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_mixer REQUIRED)
 
-include_directories(${SDL2_INCLUDE_DIR}
-                    ${SDL2_IMAGE_INCLUDE_DIR}
-                    ${SDL2_MIXER_INCLUDE_DIR})
+include_directories(${SDL2_INCLUDE_DIR})
 
 target_link_libraries(goattrk2 ${SDL2_LIBRARY})
 target_link_libraries(gt2reloc ${SDL2_LIBRARY})
