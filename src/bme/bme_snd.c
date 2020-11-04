@@ -6,9 +6,11 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <jack/jack.h>
-#include <jack/transport.h>
-#include <jack/midiport.h>
+#ifdef USE_JACK
+#  include <jack/jack.h>
+#  include <jack/transport.h>
+#  include <jack/midiport.h>
+#endif
 
 #include <SDL.h>
 #include "bme_main.h"
@@ -17,16 +19,18 @@
 #include "bme_io.h"
 #include "bme_err.h"
 
+#ifdef USE_JACK
 typedef jack_default_audio_sample_t sample_t;
+#endif
 
 // Prototypes
 int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned channels, int usedirectsound);
 void snd_uninit(void);
 void snd_setcustommixer(void (*custommixer)(Sint32 *dest, unsigned samples));
 
-
+#ifdef USE_JACK
 static int snd_initchannels(unsigned channels);
-
+#endif
 static int snd_initmixer(void);
 static void snd_uninitmixer(void);
 static void snd_mixdata(Uint8 *dest, unsigned bytes);
@@ -36,7 +40,9 @@ static void snd_mixer(void *userdata, Uint8 *stream, int len);
 // Lowlevel mixing functions
 static void snd_clearclipbuffer(Sint32 *clipbuffer, unsigned clipsamples);
 static void snd_mixchannel(CHANNEL *chptr, Sint32 *dest, unsigned samples);
+#ifdef USE_JACK
 static void snd_float_postprocess(Sint32 *src, sample_t* dest, unsigned samples);
+#endif
 static void snd_16bit_postprocess(Sint32 *src, Sint16 *dest, unsigned samples);
 static void snd_8bit_postprocess(Sint32 *src, Uint8 *dest, unsigned samples);
 
@@ -58,12 +64,14 @@ static Sint32 *snd_clipbuffer = NULL;
 static SDL_AudioSpec desired;
 static SDL_AudioSpec obtained;
 
+#ifdef USE_JACK
 static int use_jack = 1;
 static int use_jack_audio = 0;
 
 static jack_client_t* client;
 static jack_port_t* output_port;
 static jack_port_t* midi_input_port;
+#endif
 
 void playtestnote(int note, int ins, int chnnum);
 void insertnote(int newnote);
@@ -77,6 +85,7 @@ extern int eppos;
 
 int current_note_on = -1;
 
+#ifdef USE_JACK
 int snd_jack_process(jack_nframes_t nframes, void *arg) {
     // poll for midi events
     int i;
@@ -165,14 +174,16 @@ int snd_init_jack() {
     bme_error = BME_OK;
     return BME_OK;
 }
+#endif
 
 int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned channels, int usedirectsound)
 {
+#ifdef USE_JACK
     if (use_jack) {
         snd_init_jack();
         if (use_jack_audio) return BME_OK;
     }
-
+#endif
     // Register snd_uninit as an atexit function
 
     if (!snd_atexit_registered)
@@ -309,7 +320,11 @@ int snd_initchannels(unsigned channels) {
 
 void snd_uninit(void)
 {
-    if (!use_jack_audio && snd_sndinitted)
+    if (snd_sndinitted
+#ifdef USE_JACK
+        && !use_jack_audio
+#endif
+        )
     {
         SDL_CloseAudio();
         snd_sndinitted = 0;
@@ -364,12 +379,12 @@ static void snd_mixdata(Uint8 *dest, unsigned bytes)
         clipsamples >>= 1;
         mixsamples >>= 1;
     }
-
+#ifdef USE_JACK
     if (use_jack_audio) {
         clipsamples = bytes / sizeof(sample_t);
         mixsamples = clipsamples;
     }
-
+#endif
     snd_clearclipbuffer(snd_clipbuffer, clipsamples);
 
     if (snd_player) // Must the player be called?
@@ -415,12 +430,14 @@ static void snd_mixdata(Uint8 *dest, unsigned bytes)
     }
 
     clipptr = (Sint32 *)snd_clipbuffer;
-
+#ifdef USE_JACK
     if (use_jack_audio)
     {
         snd_float_postprocess(clipptr, (sample_t*)dest, clipsamples);
     }
-    else if (snd_mixmode & SIXTEENBIT)
+    else
+#endif
+    if (snd_mixmode & SIXTEENBIT)
     {
         snd_16bit_postprocess(clipptr, (Sint16 *)dest, clipsamples);
     }
@@ -446,7 +463,7 @@ static void snd_clearclipbuffer(Sint32 *clipbuffer, unsigned clipsamples)
 {
     memset(clipbuffer, 0, clipsamples*sizeof(int));
 }
-
+#ifdef USE_JACK
 static void snd_float_postprocess(Sint32* src, sample_t* dest, unsigned samples) {
     while (samples--)
     {
@@ -456,7 +473,7 @@ static void snd_float_postprocess(Sint32* src, sample_t* dest, unsigned samples)
         *dest++ = sample / 32768.0;
     }
 }
-
+#endif
 static void snd_16bit_postprocess(Sint32 *src, Sint16 *dest, unsigned samples)
 {
     while (samples--)
