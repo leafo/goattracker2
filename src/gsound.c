@@ -214,7 +214,7 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
     firsttimeinit = 0;
   }
   playspeed = snd_mixrate;
-  sid_init(playspeed, m, ntsc, interpolate & 1, customclockrate, interpolate >> 1);
+  sid_init(playspeed, m, ntsc, interpolate, customclockrate);
 
   snd_player = &sound_playrout;
   snd_setcustommixer(sound_mixer);

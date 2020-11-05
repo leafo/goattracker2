@@ -211,7 +211,7 @@ model 8580 and to load "dojo.sng" on startup.
 -Fxx Set custom SID clock cycles per second (0 = use PAL/NTSC default)
 -Gxx Set pitch of A-4 in Hz (0 = use default frequencytable, close to 440Hz)
 -Hxx Use HardSID (0 = off, 1 = HardSID ID0 2 = HardSID ID1 etc.)
--Ixx Set reSID interpolation (0 = off, 1 = on, 2 = distortion, 3 = distortion & on) DEFAULT=off
+-Ixx Set reSID resampling mode (0 = fast, 1 = interpolation, 2 = resampling, 3 = fastmem resampling) DEFAULT=2
 -Jxx Set special note names (2 chars for every note in an octave/cycle, e.g. C-DbD-EbE-F-GbG-AbA-BbB-)
 -Kxx Note-entry mode (0 = PROTRACKER 1 = DMC) DEFAULT=PROTRK.
 -Lxx SID memory location in hex. DEFAULT=D400

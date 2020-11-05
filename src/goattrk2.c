@@ -60,7 +60,7 @@ unsigned mr = DEFAULTMIXRATE;
 unsigned writer = 0;
 unsigned hardsid = 0;
 unsigned catweasel = 0;
-unsigned interpolate = 0;
+unsigned interpolate = 2;
 unsigned residdelay = 0;
 unsigned hardsidbufinteractive = 20;
 unsigned hardsidbufplayback = 400;
@@ -104,7 +104,7 @@ char* usage[] = {
     "-Fxx Set custom SID clock cycles per second (0 = use PAL/NTSC default)",
     "-Gxx Set pitch of A-4 in Hz (0 = use default frequencytable, close to 440Hz)",
     "-Hxx Use HardSID (0 = off, 1 = HardSID ID0 2 = HardSID ID1 etc.)",
-    "-Ixx Set reSID interpolation (0 = off, 1 = on, 2 = distortion, 3 = distortion & on) DEFAULT=off",
+    "-Ixx Set reSID resampling mode (0 = fast, 1 = interpolation, 2 = resampling, 3 = fastmem resampling) DEFAULT=2",
      "-Jxx Set special note names (2 chars for every note in an octave/cycle, e.g. C-DbD-EbE-F-GbG-AbA-BbB-)",
     "-Kxx Note-entry mode (0 = Protracker, 1 = DMC, 2 = Janko) DEFAULT=Protracker",    "-Lxx SID memory location in hex. DEFAULT=D400",
     "-Mxx Set sound mixing rate DEFAULT=44100",
@@ -177,16 +177,6 @@ int main(int argc, char **argv)
     getparam(configfile, &customclockrate);
     getparam(configfile, &hardsidbufinteractive);
     getparam(configfile, &hardsidbufplayback);
-    getfloatparam(configfile, &filterparams.distortionrate);
-    getfloatparam(configfile, &filterparams.distortionpoint);
-    getfloatparam(configfile, &filterparams.distortioncfthreshold);
-    getfloatparam(configfile, &filterparams.type3baseresistance);
-    getfloatparam(configfile, &filterparams.type3offset);
-    getfloatparam(configfile, &filterparams.type3steepness);
-    getfloatparam(configfile, &filterparams.type3minimumfetresistance);
-    getfloatparam(configfile, &filterparams.type4k);
-    getfloatparam(configfile, &filterparams.type4b);
-    getfloatparam(configfile, &filterparams.voicenonlinearity);
     getparam(configfile, (unsigned*)&win_fullscreen);
     getparam(configfile, &bigwindow);
     getfloatparam(configfile, &basepitch);
@@ -511,16 +501,6 @@ int main(int argc, char **argv)
     customclockrate,
     hardsidbufinteractive,
     hardsidbufplayback,
-    filterparams.distortionrate,
-    filterparams.distortionpoint,
-    filterparams.distortioncfthreshold,
-    filterparams.type3baseresistance,
-    filterparams.type3offset,
-    filterparams.type3steepness,
-    filterparams.type3minimumfetresistance,
-    filterparams.type4k,
-    filterparams.type4b,
-    filterparams.voicenonlinearity,
     win_fullscreen,
     bigwindow,
     basepitch,

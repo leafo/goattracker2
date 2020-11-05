@@ -27,13 +27,6 @@ set(GOATTRK2_SOURCES
     src/resid/sid.cc
     src/resid/wave.cc
     src/resid/voice.cc
-    src/resid-fp/envelopefp.cpp
-    src/resid-fp/extfiltfp.cpp
-    src/resid-fp/filterfp.cpp
-    src/resid-fp/potfp.cpp
-    src/resid-fp/sidfp.cpp
-    src/resid-fp/wavefp.cpp
-    src/resid-fp/voicefp.cpp
     src/asm/asmtab.c
     src/asm/chnkpool.c
     src/asm/expr.c
@@ -79,13 +72,6 @@ set(GT2RELOC_SOURCES
     src/resid/sid.cc
     src/resid/wave.cc
     src/resid/voice.cc
-    src/resid-fp/envelopefp.cpp
-    src/resid-fp/extfiltfp.cpp
-    src/resid-fp/filterfp.cpp
-    src/resid-fp/potfp.cpp
-    src/resid-fp/sidfp.cpp
-    src/resid-fp/wavefp.cpp
-    src/resid-fp/voicefp.cpp
     src/asm/asmtab.c
     src/asm/chnkpool.c
     src/asm/expr.c
