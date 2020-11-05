@@ -402,6 +402,14 @@ void printstatus(void)
       }
       if ((p == etpos) && (etnum == c)) color = CEDIT;
       sprintf(textbuffer, "%02X:%02X %02X", p+1, ltable[c][p], rtable[c][p]);
+      if (patterndispmode & 2)
+      {
+        if (!ltable[c][p] && !rtable[c][p] && !ltable[c][p+1] && !rtable[c][p+1])
+        {
+          memset(&textbuffer[3], '.', 2);
+          memset(&textbuffer[6], '.', 2);
+        }
+      }
       printtext(40+10+10*c, 15+d, color, textbuffer);
 
       if (etmarknum == c)
