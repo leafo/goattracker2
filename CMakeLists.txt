@@ -47,6 +47,12 @@ set(GOATTRK2_SOURCES
     src/bme/bme_end.c
     src/bme/bme.c)
 
+if(MINGW)
+    list(APPEND GOATTRK2_SOURCES
+        src/goattrk2.rc
+    )
+endif(MINGW)
+
 # it would be nice not having to link things like resid, however the source is
 # not ready for that
 set(GT2RELOC_SOURCES
