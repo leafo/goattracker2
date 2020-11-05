@@ -206,7 +206,7 @@ model 8580 and to load "dojo.sng" on startup.
 -Axx Set hard restart ADSR parameter in hex. DEFAULT=0F00
 -Bxx Set sound buffer length in milliseconds DEFAULT=100
 -Cxx Use CatWeasel MK3 PCI SID (0 = off, 1 = on)
--Dxx Pattern row display (0 = decimal, 1 = hex, 2 = decimal w/dots, 3 = hex w/dots)
+-Dxx Pattern row display (0 = decimal, 1 = hex, 2 = decimal w/dots, 3 = hex w/dots) DEFAULT=3
 -Exx Set emulated SID model (0 = 6581 1 = 8580) DEFAULT=6581
 -Fxx Set custom SID clock cycles per second (0 = use PAL/NTSC default)
 -Gxx Set pitch of A-4 in Hz (0 = use default frequencytable, close to 440Hz)
