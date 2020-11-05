@@ -105,7 +105,7 @@ char* usage[] = {
     "-Gxx Set pitch of A-4 in Hz (0 = use default frequencytable, close to 440Hz)",
     "-Hxx Use HardSID (0 = off, 1 = HardSID ID0 2 = HardSID ID1 etc.)",
     "-Ixx Set reSID resampling mode (0 = fast, 1 = interpolation, 2 = resampling, 3 = fastmem resampling) DEFAULT=2",
-     "-Jxx Set special note names (2 chars for every note in an octave/cycle, e.g. C-DbD-EbE-F-GbG-AbA-BbB-)",
+    "-Jxx Set special note names (2 chars for every note in an octave/cycle, e.g. C-DbD-EbE-F-GbG-AbA-BbB-)",
     "-Kxx Note-entry mode (0 = Protracker, 1 = DMC, 2 = Janko) DEFAULT=Protracker",    "-Lxx SID memory location in hex. DEFAULT=D400",
     "-Mxx Set sound mixing rate DEFAULT=44100",
     "-Oxx Set pulseoptimization/skipping (0 = off, 1 = on) DEFAULT=on",
@@ -451,7 +451,7 @@ int main(int argc, char **argv)
                         ";Speed multiplier (0 = 25Hz, 1 = 1X, 2 = 2X etc.)\n%d\n\n"
                         ";Use CatWeasel SID (0 = off, 1 = on)\n%d\n\n"
                         ";Hardrestart ADSR parameter\n$%04x\n\n"
-                        ";reSID interpolation (0 = off, 1 = on, 2 = distortion, 3 = distortion & on)\n%d\n\n"
+                        ";reSID resampling mode (0 = fast, 1 = interpolation, 2 = resampling, 3 = fastmem resampling)\n%d\n\n"
                         ";Pattern display mode (0 = decimal, 1 = hex, 2 = decimal w/dots, 3 = hex w/dots)\n%d\n\n"
                         ";SID baseaddress\n$%04x\n\n"
                         ";Finevibrato mode (0 = off, 1 = on)\n%d\n\n"
