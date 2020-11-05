@@ -28,9 +28,7 @@ int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned
 void snd_uninit(void);
 void snd_setcustommixer(void (*custommixer)(Sint32 *dest, unsigned samples));
 
-#ifdef USE_JACK
 static int snd_initchannels(unsigned channels);
-#endif
 static int snd_initmixer(void);
 static void snd_uninitmixer(void);
 static void snd_mixdata(Uint8 *dest, unsigned bytes);
