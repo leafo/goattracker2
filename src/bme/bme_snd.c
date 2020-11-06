@@ -39,8 +39,9 @@ static void snd_mixer(void *userdata, Uint8 *stream, int len);
 static void snd_clearclipbuffer(Sint32 *clipbuffer, unsigned clipsamples);
 static void snd_mixchannel(CHANNEL *chptr, Sint32 *dest, unsigned samples);
 #ifdef USE_JACK
-static void snd_float_postprocess(Sint32 *src, sample_t* dest, unsigned samples);
+static void snd_jack_postprocess(Sint32 *src, sample_t* dest, unsigned samples);
 #endif
+static void snd_float_postprocess(Sint32 *src, float* dest, unsigned samples);
 static void snd_16bit_postprocess(Sint32 *src, Sint16 *dest, unsigned samples);
 static void snd_8bit_postprocess(Sint32 *src, Uint8 *dest, unsigned samples);
 
@@ -55,7 +56,7 @@ unsigned snd_mixrate;
 
 static void (*snd_custommixer)(Sint32 *dest, unsigned samples) = NULL;
 static unsigned snd_buffersize;
-static unsigned snd_samplesize;
+static unsigned snd_framesize;
 static unsigned snd_previouschannels = 0xffffffff;
 static int snd_atexit_registered = 0;
 static Sint32 *snd_clipbuffer = NULL;
@@ -136,12 +137,9 @@ int snd_init_jack() {
         snd_bpmcount = 0;
         snd_sndinitted = 1;
 
-        snd_mixmode = 0;
-        snd_samplesize = 1;
-
         // force 16 bit
-        snd_mixmode |= SIXTEENBIT;
-        snd_samplesize <<= 1;
+        snd_mixmode = SIXTEENBIT;
+        snd_framesize = 2;
 
         snd_buffersize = 1880;
 
@@ -247,19 +245,27 @@ int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned
     snd_sndinitted = 1;
 
     snd_mixmode = 0;
-    snd_samplesize = 1;
+    snd_framesize = 1;
     if (obtained.channels == 2)
     {
         snd_mixmode |= STEREO;
-        snd_samplesize <<= 1;
+        snd_framesize <<= 1;
     }
-    if ((obtained.format == AUDIO_S16SYS) ||
-       (obtained.format == AUDIO_S16LSB) ||
-       (obtained.format == AUDIO_S16MSB))
+    if ((SDL_AUDIO_BITSIZE(obtained.format) == 16) &&
+       SDL_AUDIO_ISSIGNED(obtained.format) &&
+       SDL_AUDIO_ISINT(obtained.format))
     {
         snd_mixmode |= SIXTEENBIT;
-        snd_samplesize <<= 1;
+        snd_framesize <<= 1;
     }
+    else if ((SDL_AUDIO_BITSIZE(obtained.format) == 32) &&
+       SDL_AUDIO_ISSIGNED(obtained.format) &&
+       SDL_AUDIO_ISFLOAT(obtained.format))
+    {
+        snd_mixmode |= FLOAT32BIT;
+        snd_framesize <<= 2;
+    }
+    //else return BME_ERROR
     snd_buffersize = obtained.size;
     snd_mixrate = obtained.freq;
 
@@ -341,11 +347,11 @@ static int snd_initmixer(void)
 
     if (snd_mixmode & STEREO)
     {
-        snd_clipbuffer = malloc((snd_buffersize / snd_samplesize) * sizeof(int) * 2);
+        snd_clipbuffer = malloc((snd_buffersize / snd_framesize) * sizeof(Sint32) * 2);
     }
     else
     {
-        snd_clipbuffer = malloc((snd_buffersize / snd_samplesize) * sizeof(int));
+        snd_clipbuffer = malloc((snd_buffersize / snd_framesize) * sizeof(Sint32));
     }
     if (!snd_clipbuffer) return 0;
 
@@ -372,7 +378,12 @@ static void snd_mixdata(Uint8 *dest, unsigned bytes)
     unsigned clipsamples = bytes;
     Sint32 *clipptr = (Sint32 *)snd_clipbuffer;
     if (snd_mixmode & STEREO) mixsamples >>= 1;
-    if (snd_mixmode & SIXTEENBIT)
+    if (snd_mixmode & FLOAT32BIT)
+    {
+        clipsamples >>= 2;
+        mixsamples >>= 2;
+    }
+    else if (snd_mixmode & SIXTEENBIT)
     {
         clipsamples >>= 1;
         mixsamples >>= 1;
@@ -431,11 +442,15 @@ static void snd_mixdata(Uint8 *dest, unsigned bytes)
 #ifdef USE_JACK
     if (use_jack_audio)
     {
-        snd_float_postprocess(clipptr, (sample_t*)dest, clipsamples);
+        snd_jack_postprocess(clipptr, (sample_t*)dest, clipsamples);
     }
     else
 #endif
-    if (snd_mixmode & SIXTEENBIT)
+    if (snd_mixmode & FLOAT32BIT)
+    {
+        snd_float_postprocess(clipptr, (float *)dest, clipsamples);
+    }
+    else if (snd_mixmode & SIXTEENBIT)
     {
         snd_16bit_postprocess(clipptr, (Sint16 *)dest, clipsamples);
     }
@@ -459,10 +474,10 @@ static void snd_mixchannels(Sint32 *dest, unsigned samples)
 
 static void snd_clearclipbuffer(Sint32 *clipbuffer, unsigned clipsamples)
 {
-    memset(clipbuffer, 0, clipsamples*sizeof(int));
+    memset(clipbuffer, 0, clipsamples*sizeof(Sint32));
 }
 #ifdef USE_JACK
-static void snd_float_postprocess(Sint32* src, sample_t* dest, unsigned samples) {
+static void snd_jack_postprocess(Sint32* src, sample_t* dest, unsigned samples) {
     while (samples--)
     {
         int sample = *src++;
@@ -472,6 +487,17 @@ static void snd_float_postprocess(Sint32* src, sample_t* dest, unsigned samples)
     }
 }
 #endif
+
+static void snd_float_postprocess(Sint32* src, float* dest, unsigned samples) {
+    while (samples--)
+    {
+        int sample = *src++;
+        if (sample > 32767) sample = 32767;
+        if (sample < -32768) sample = -32768;
+        *dest++ = sample / 32768.0f;
+    }
+}
+
 static void snd_16bit_postprocess(Sint32 *src, Sint16 *dest, unsigned samples)
 {
     while (samples--)

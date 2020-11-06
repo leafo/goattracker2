@@ -40,6 +40,7 @@
 #define STEREO 1
 #define EIGHTBIT 0
 #define SIXTEENBIT 2
+#define FLOAT32BIT 4
 
 #define VM_OFF 0
 #define VM_ON 1
