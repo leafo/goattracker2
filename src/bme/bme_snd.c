@@ -194,7 +194,7 @@ int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned
 
     // Check for illegal config
 
-    if ((channels < 1) || (!mixrate) || (!bufferlength))
+    if ((!mixrate) || (!bufferlength))
     {
         bme_error = BME_ILLEGAL_CONFIG;
         snd_uninit();
@@ -229,11 +229,6 @@ int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned
 
     snd_bpmcount = 0;
 
-    // (Re)allocate channels if necessary
-    if (snd_initchannels(channels) != BME_OK) {
-        return BME_ERROR;
-    }
-
     SDL_PauseAudio(1);
 
     if (SDL_OpenAudio(&desired, &obtained))
@@ -246,11 +241,18 @@ int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned
 
     snd_mixmode = 0;
     snd_framesize = 1;
+
     if (obtained.channels == 2)
     {
         snd_mixmode |= STEREO;
         snd_framesize <<= 1;
     }
+
+    // (Re)allocate channels if necessary
+    if (snd_initchannels(obtained.channels) != BME_OK) {
+        return BME_ERROR;
+    }
+
     if ((SDL_AUDIO_BITSIZE(obtained.format) == 16) &&
        SDL_AUDIO_ISSIGNED(obtained.format) &&
        SDL_AUDIO_ISINT(obtained.format))
@@ -265,7 +267,12 @@ int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned
         snd_mixmode |= FLOAT32BIT;
         snd_framesize <<= 2;
     }
-    //else return BME_ERROR
+    else
+    {
+        bme_error = BME_SOUND_ERROR;
+        snd_uninit();
+        return BME_ERROR;
+    }
     snd_buffersize = obtained.size;
     snd_mixrate = obtained.freq;
 
@@ -374,20 +381,10 @@ static void snd_mixer(void *userdata, Uint8 *stream, int len)
 
 static void snd_mixdata(Uint8 *dest, unsigned bytes)
 {
-    unsigned mixsamples = bytes;
-    unsigned clipsamples = bytes;
+    unsigned mixsamples = bytes / snd_framesize;
+    unsigned clipsamples = mixsamples;
+    if (snd_mixmode & STEREO) clipsamples <<= 1;
     Sint32 *clipptr = (Sint32 *)snd_clipbuffer;
-    if (snd_mixmode & STEREO) mixsamples >>= 1;
-    if (snd_mixmode & FLOAT32BIT)
-    {
-        clipsamples >>= 2;
-        mixsamples >>= 2;
-    }
-    else if (snd_mixmode & SIXTEENBIT)
-    {
-        clipsamples >>= 1;
-        mixsamples >>= 1;
-    }
 #ifdef USE_JACK
     if (use_jack_audio) {
         clipsamples = bytes / sizeof(sample_t);
@@ -476,6 +473,7 @@ static void snd_clearclipbuffer(Sint32 *clipbuffer, unsigned clipsamples)
 {
     memset(clipbuffer, 0, clipsamples*sizeof(Sint32));
 }
+
 #ifdef USE_JACK
 static void snd_jack_postprocess(Sint32* src, sample_t* dest, unsigned samples) {
     while (samples--)

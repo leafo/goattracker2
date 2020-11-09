@@ -481,7 +481,7 @@ void sound_playrout(void)
 
 void sound_mixer(Sint32 *dest, unsigned samples)
 {
-  int c;
+  int s, c;
 
   if (!initted) return;
   if (samples > MIXBUFFERSIZE) return;
@@ -491,8 +491,9 @@ void sound_mixer(Sint32 *dest, unsigned samples)
   if (writehandle)
     fwrite(buffer, samples * sizeof(Uint16), 1, writehandle);
 
-  for (c = 0; c < samples; c++)
-    dest[c] = buffer[c];
+  for (s = 0; s < samples; s++)
+    for (c = snd_channels; c; c--)
+      *dest++ = buffer[s];
 }
 
 #ifdef __WIN32__
