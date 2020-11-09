@@ -115,8 +115,6 @@ IF(JACK)
     ADD_DEFINITIONS(-DUSE_JACK)
 ENDIF(JACK)
 
-SET_SOURCE_FILES_PROPERTIES(src/resid-fp/sidfp.cpp PROPERTIES COMPILE_FLAGS "-fpermissive")
-
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/bme)
 include_directories(${CMAKE_SOURCE_DIR}/src/asm)
@@ -143,8 +141,6 @@ add_executable(gt2reloc ${GT2RELOC_SOURCES})
 add_executable(mod2sng ${MOD2SNG_SOURCES})
 add_executable(ins2snd2 ${INS2SND2_SOURCES})
 add_executable(sngspli2 ${SNGSPLI2_SOURCES})
-
-target_compile_definitions(gt2reloc PUBLIC -DGT2RELOC)
 
 find_package(SDL2 REQUIRED)
 
