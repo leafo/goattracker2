@@ -110,11 +110,6 @@ set(SNGSPLI2_SOURCES
     src/sngspli2.c
     src/bme/bme_end.c)
 
-OPTION(JACK "Use Jack audio output and midi input" OFF)
-IF(JACK)
-    ADD_DEFINITIONS(-DUSE_JACK)
-ENDIF(JACK)
-
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/bme)
 include_directories(${CMAKE_SOURCE_DIR}/src/asm)
@@ -145,7 +140,12 @@ add_executable(sngspli2 ${SNGSPLI2_SOURCES})
 set(SDL2_BUILDING_LIBRARY TRUE)
 find_package(SDL2 REQUIRED)
 
-include_directories(${SDL2_INCLUDE_DIR})
+find_package(Jack)
+IF(JACK_FOUND)
+    target_compile_definitions(goattrk2 PUBLIC USE_JACK)
+ENDIF(JACK_FOUND)
 
-target_link_libraries(goattrk2 ${SDL2_LIBRARY})
+include_directories(${SDL2_INCLUDE_DIR} ${JACK_INCLUDE_DIR})
+
+target_link_libraries(goattrk2 ${SDL2_LIBRARY} ${JACK_LIBRARY})
 target_link_libraries(gt2reloc ${SDL2_LIBRARY})
