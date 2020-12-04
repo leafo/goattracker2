@@ -151,19 +151,19 @@ void snd_midi_process(double timeStamp, const unsigned char *message, size_t mes
     int i;
 
     for (i = 0; i < messageSize; i++) {
-        // printf("size: %u: %u %u %u\n", messageSize,
-        //     *message, *(message+1), *(message+2));
+         //printf("size: %u: %02X %u %u\n", messageSize,
+         //    *message, *(message+1), *(message+2));
 
-        unsigned char midi_cmd = message[i];
+        unsigned char midi_cmd = message[i++];
         if ((midi_cmd & 0xf0) == 0x90) {
             // note on
-            unsigned char note = message[i+1];
+            unsigned char note = message[i++];
             current_note_on = note;
             insertnote(note + 72);
             epview = eppos-VISIBLEPATTROWS/2;
         } else if ((midi_cmd & 0xf0) == 0x80) {
             // note off
-            unsigned char note = message[i+1];
+            unsigned char note = message[i++];
             if (note == current_note_on) {
                 playtestnote(190, einum, epchn); // off note
                 current_note_on = -1;
