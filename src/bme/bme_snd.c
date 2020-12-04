@@ -9,7 +9,10 @@
 #ifdef USE_JACK
 #  include <jack/jack.h>
 #  include <jack/transport.h>
-#  include <jack/midiport.h>
+#endif
+
+#ifdef USE_MIDI_INPUT
+#  include <rtmidi/rtmidi_c.h>
 #endif
 
 #include <SDL.h>
@@ -69,7 +72,10 @@ static int use_jack_audio = 0;
 
 static jack_client_t* client;
 static jack_port_t* output_port;
-static jack_port_t* midi_input_port;
+#endif
+
+#ifdef USE_MIDI_INPUT
+RtMidiInPtr midi_device = NULL;
 #endif
 
 void playtestnote(int note, int ins, int chnnum);
@@ -86,33 +92,6 @@ int current_note_on = -1;
 
 #ifdef USE_JACK
 int snd_jack_process(jack_nframes_t nframes, void *arg) {
-    // poll for midi events
-    int i;
-    jack_midi_event_t event;
-    void* midi_buffer = jack_port_get_buffer(midi_input_port, nframes);
-    int num_events = jack_midi_get_event_count(midi_buffer);
-
-    for (i = 0; i < num_events; i++) {
-        jack_midi_event_get(&event, midi_buffer, i);
-        // printf("size: %u: %u %u %u\n", event.size,
-        //     *event.buffer, *(event.buffer+1), *(event.buffer+2));
-
-        if ((*event.buffer & 0xf0) == 0x90) {
-            // note on
-            unsigned char note = *(event.buffer + 1);
-            current_note_on = note;
-            insertnote(note + 72);
-            epview = eppos-VISIBLEPATTROWS/2;
-        } else if ((*event.buffer & 0xf0) == 0x80) {
-            // note off
-            unsigned char note = *(event.buffer + 1);
-            if (note == current_note_on) {
-                playtestnote(190, einum, epchn); // off note
-                current_note_on = -1;
-            }
-        }
-    }
-
     if (use_jack_audio) {
         sample_t* buffer = jack_port_get_buffer(output_port, nframes);
         snd_mixdata((Uint8*)buffer, sizeof(sample_t) * nframes);
@@ -121,8 +100,6 @@ int snd_jack_process(jack_nframes_t nframes, void *arg) {
 }
 
 int snd_init_jack() {
-    snd_uninit();
-
     jack_status_t status;
 
     client = jack_client_open("goattracker2", JackNoStartServer, &status);
@@ -159,9 +136,6 @@ int snd_init_jack() {
             JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
     }
 
-    midi_input_port = jack_port_register(client, "midi_in",
-        JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
-
     if (jack_activate(client)) {
         fprintf(stderr, "failed to activate\n");
         return BME_ERROR;
@@ -172,8 +146,66 @@ int snd_init_jack() {
 }
 #endif
 
+#ifdef USE_MIDI_INPUT
+void snd_midi_process(double timeStamp, const unsigned char *message, size_t messageSize, void *userData) {
+    int i;
+
+    for (i = 0; i < messageSize; i++) {
+        // printf("size: %u: %u %u %u\n", messageSize,
+        //     *message, *(message+1), *(message+2));
+
+        unsigned char midi_cmd = message[i];
+        if ((midi_cmd & 0xf0) == 0x90) {
+            // note on
+            unsigned char note = message[i+1];
+            current_note_on = note;
+            insertnote(note + 72);
+            epview = eppos-VISIBLEPATTROWS/2;
+        } else if ((midi_cmd & 0xf0) == 0x80) {
+            // note off
+            unsigned char note = message[i+1];
+            if (note == current_note_on) {
+                playtestnote(190, einum, epchn); // off note
+                current_note_on = -1;
+            }
+        }
+    }
+}
+
+int snd_init_midi() {
+    RtMidiInPtr midi_device = rtmidi_in_create(RTMIDI_API_UNSPECIFIED, "goattracker2", 100);
+    if (!midi_device->ok) {
+        fprintf(stderr, "failed to activate midi: %s\n", midi_device->msg);
+        return BME_ERROR;
+    }
+
+    rtmidi_open_port(midi_device, 0, "midi_in");
+    if (!midi_device->ok) {
+        fprintf(stderr, "failed to open port: %s\n", midi_device->msg);
+        return BME_ERROR;
+    }
+
+    rtmidi_in_set_callback(midi_device, snd_midi_process, NULL);
+    if (!midi_device->ok) {
+        fprintf(stderr, "failed to set midi callback: %s\n", midi_device->msg);
+        return BME_ERROR;
+    }
+
+    bme_error = BME_OK;
+    return BME_OK;
+}
+#endif
+
 int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned channels, int usedirectsound)
 {
+    // If user wants to re-initialize, shutdown first
+
+    snd_uninit();
+
+#ifdef USE_MIDI_INPUT
+    snd_init_midi();
+#endif
+
 #ifdef USE_JACK
     if (use_jack) {
         snd_init_jack();
@@ -187,10 +219,6 @@ int snd_init(unsigned mixrate, unsigned mixmode, unsigned bufferlength, unsigned
         atexit(snd_uninit);
         snd_atexit_registered = 1;
     }
-
-    // If user wants to re-initialize, shutdown first
-
-    snd_uninit();
 
     // Check for illegal config
 
@@ -341,6 +369,10 @@ void snd_uninit(void)
         snd_sndinitted = 0;
     }
     snd_uninitmixer();
+#ifdef USE_MIDI_INPUT
+    if (midi_device != NULL)
+        rtmidi_in_free(midi_device);
+#endif
 }
 
 void snd_setcustommixer(void (*custommixer)(Sint32 *dest, unsigned samples))
