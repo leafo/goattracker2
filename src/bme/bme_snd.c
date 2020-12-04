@@ -147,6 +147,19 @@ int snd_init_jack() {
 #endif
 
 #ifdef USE_MIDI_INPUT
+void noteOn(unsigned char note) {
+    current_note_on = note;
+    insertnote(note + 72);
+    epview = eppos-VISIBLEPATTROWS/2;
+}
+
+void noteOff(unsigned char note) {
+    if (note == current_note_on) {
+        playtestnote(190, einum, epchn); // off note
+        current_note_on = -1;
+    }
+}
+
 void snd_midi_process(double timeStamp, const unsigned char *message, size_t messageSize, void *userData) {
     int i;
 
@@ -158,16 +171,16 @@ void snd_midi_process(double timeStamp, const unsigned char *message, size_t mes
         if ((midi_cmd & 0xf0) == 0x90) {
             // note on
             unsigned char note = message[i++];
-            current_note_on = note;
-            insertnote(note + 72);
-            epview = eppos-VISIBLEPATTROWS/2;
+            unsigned char velocity = message[i];
+            if (velocity != 0) {
+                noteOn(note);
+            } else {
+                noteOff(note);
+            }
         } else if ((midi_cmd & 0xf0) == 0x80) {
             // note off
             unsigned char note = message[i++];
-            if (note == current_note_on) {
-                playtestnote(190, einum, epchn); // off note
-                current_note_on = -1;
-            }
+            noteOff(note);
         }
     }
 }
