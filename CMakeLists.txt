@@ -143,9 +143,11 @@ find_package(SDL2 REQUIRED)
 find_package(Jack)
 IF(JACK_FOUND)
     target_compile_definitions(goattrk2 PUBLIC USE_JACK)
+    include_directories(${JACK_INCLUDE_DIR})
+    target_link_libraries(goattrk2 ${JACK_LIBRARY})
 ENDIF(JACK_FOUND)
 
-include_directories(${SDL2_INCLUDE_DIR} ${JACK_INCLUDE_DIR})
+include_directories(${SDL2_INCLUDE_DIR})
 
-target_link_libraries(goattrk2 ${SDL2_LIBRARY} ${JACK_LIBRARY})
+target_link_libraries(goattrk2 ${SDL2_LIBRARY})
 target_link_libraries(gt2reloc ${SDL2_LIBRARY})
