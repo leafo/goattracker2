@@ -49,7 +49,7 @@ void printstatus(void)
 
   if ((mouseb > MOUSEB_LEFT) && (mousey <= 1) && (!eamode)) menu = 1;
 
-  printblankc(0, 0, 15+16, MAX_COLUMNS);
+  printblankc(0, 0, CHEADER, MAX_COLUMNS);
 
   if (!menu)
   {
@@ -58,43 +58,43 @@ void printstatus(void)
     else
       sprintf(textbuffer, "%s - %s", programname, loadedsongfilename);
     textbuffer[49] = 0;
-    printtext(0, 0, 15+16, textbuffer);
+    printtext(0, 0, CHEADER, textbuffer);
 
     if (usefinevib)
-      printtext(40+10, 0, 15+16, "FV");
+      printtext(40+10, 0, CHEADER, "FV");
 
     if (optimizepulse)
-      printtext(43+10, 0, 15+16, "PO");
+      printtext(43+10, 0, CHEADER, "PO");
 
     if (optimizerealtime)
-      printtext(46+10, 0, 15+16, "RO");
+      printtext(46+10, 0, CHEADER, "RO");
 
     if (ntsc)
-      printtext(49+10, 0, 15+16, "NTSC");
+      printtext(49+10, 0, CHEADER, "NTSC");
     else
-      printtext(49+10, 0, 15+16, " PAL");
+      printtext(49+10, 0, CHEADER, " PAL");
 
     if (!sidmodel)
-      printtext(54+10, 0, 15+16, "6581");
+      printtext(54+10, 0, CHEADER, "6581");
     else
-      printtext(54+10, 0, 15+16, "8580");
+      printtext(54+10, 0, CHEADER, "8580");
 
     sprintf(textbuffer, "HR:%04X", adparam);
-    printtext(59+10, 0, 15+16, textbuffer);
+    printtext(59+10, 0, CHEADER, textbuffer);
     if (eamode) printbg(62+10+eacolumn, 0, cc, 1);
 
     if (multiplier)
     {
       sprintf(textbuffer, "%2dX", multiplier);
-      printtext(67+10, 0, 15+16, textbuffer);
+      printtext(67+10, 0, CHEADER, textbuffer);
     }
-    else printtext(67+10, 0, 15+16, "25Hz");
+    else printtext(67+10, 0, CHEADER, "25Hz");
 
-    printtext(72+20, 0, 15+16, "F12=HELP");
+    printtext(72+20, 0, CHEADER, "F12=HELP");
   }
   else
   {
-    printtext(0, 0, 15+16, " PLAY | PLAYPOS | PLAYPATT | STOP | LOAD | SAVE | PACK/RL | HELP | CLEAR | QUIT |");
+    printtext(0, 0, CHEADER, " PLAY | PLAYPOS | PLAYPATT | STOP | LOAD | SAVE | PACK/RL | HELP | CLEAR | QUIT |");
   }
 
   if ((followplay) && (isplaying()))
@@ -238,7 +238,7 @@ void printstatus(void)
   for (c = 0; c < MAX_CHN; c++)
   {
     sprintf(textbuffer, " %d ", c+1);
-    printtext(40+10, 3+c, 15, textbuffer);
+    printtext(40+10, 3+c, CTITLE, textbuffer);
     for (d = 0; d < VISIBLEORDERLIST; d++)
     {
       int p = esview+d;
