@@ -45,7 +45,11 @@ set(GOATTRK2_SOURCES
     src/bme/bme_kbd.c
     src/bme/bme_io.c
     src/bme/bme_end.c
-    src/bme/bme.c)
+    src/bme/bme.c
+    src/rtmidi/rtmidi_c.h
+    src/rtmidi/rtmidi_c.cpp
+    src/rtmidi/RtMidi.h
+    src/rtmidi/RtMidi.cpp)
 
 if(MINGW)
     list(APPEND GOATTRK2_SOURCES
@@ -140,14 +144,39 @@ add_executable(sngspli2 ${SNGSPLI2_SOURCES})
 set(SDL2_BUILDING_LIBRARY TRUE)
 find_package(SDL2 REQUIRED)
 
-find_package(Jack)
-IF(JACK_FOUND)
-    target_compile_definitions(goattrk2 PUBLIC USE_JACK)
-    include_directories(${JACK_INCLUDE_DIR})
-    target_link_libraries(goattrk2 ${JACK_LIBRARY})
-ENDIF(JACK_FOUND)
-
 include_directories(${SDL2_INCLUDE_DIR})
 
 target_link_libraries(goattrk2 ${SDL2_LIBRARY})
 target_link_libraries(gt2reloc ${SDL2_LIBRARY})
+
+find_package(Jack)
+IF(JACK_FOUND)
+    target_compile_definitions(goattrk2 PUBLIC USE_JACK __UNIX_JACK__)
+    include_directories(${JACK_INCLUDE_DIR})
+    target_link_libraries(goattrk2 ${JACK_LIBRARY})
+    set(use_midi ON)
+ENDIF(JACK_FOUND)
+
+find_package(ALSA)
+if (ALSA_FOUND)
+    target_compile_definitions(goattrk2 PUBLIC __LINUX_ALSA__)
+    include_directories(${ALSA_INCLUDE_DIR})
+    target_link_libraries(goattrk2 ${ALSA_LIBRARY})
+    set(use_midi ON)
+endif(ALSA_FOUND)
+
+if(APPLE)
+    target_compile_definitions(goattrk2 PUBLIC __MACOSX_CORE__)
+    target_link_libraries(goattrk2 CoreMIDI CoreAudio CoreFoundation)
+    set(use_midi ON)
+endif(APPLE)
+
+if(WIN32 OR MINGW)
+    target_compile_definitions(goattrk2 PUBLIC __WINDOWS_MM__)
+    target_link_libraries(goattrk2 winmm)
+    set(use_midi ON)
+endif()
+
+if (use_midi)
+    target_compile_definitions(goattrk2 PUBLIC USE_MIDI_INPUT)
+endif(use_midi)
