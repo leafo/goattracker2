@@ -141,7 +141,6 @@ add_executable(mod2sng ${MOD2SNG_SOURCES})
 add_executable(ins2snd2 ${INS2SND2_SOURCES})
 add_executable(sngspli2 ${SNGSPLI2_SOURCES})
 
-set(SDL2_BUILDING_LIBRARY TRUE)
 find_package(SDL2 REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIR})
