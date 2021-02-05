@@ -213,8 +213,8 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
     if (exSID_init(exsidfd) < 0)
       return 0;
 
-    exSID_audio_op(exsidfd, XS_AU_6581_6581);   // XS_AU_8580_8580
-    exSID_chipselect(exsidfd, XS_CS_CHIP0);     // XS_CS_CHIP1
+    exSID_audio_op(exsidfd, m == 1 ? XS_AU_8580_8580 : XS_AU_6581_6581);
+    exSID_chipselect(exsidfd, m == 1 ? XS_CS_CHIP1 : XS_CS_CHIP0);
     exSID_clockselect(exsidfd, ntsc ? XS_CL_NTSC : XS_CL_PAL);
     exSID_audio_op(exsidfd, XS_AU_UNMUTE);
 
@@ -527,7 +527,7 @@ void sound_playrout(void)
 #ifdef USE_EXSID
   else if (useexsid)
   {
-    unsigned cycles = 1000000 / framerate;
+    unsigned cycles = (ntsc ? NTSCCLOCKRATE : PALCLOCKRATE) / framerate;
     cycles -= SIDWRITEDELAY*NUMSIDREGS;
     exSID_delay(exsidfd, cycles);
     for (c = 0; c < NUMSIDREGS; c++)
