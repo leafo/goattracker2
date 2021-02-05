@@ -207,9 +207,16 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
   if (exsid)
   {
     exsidfd = exSID_new();
+    if (!exsidfd)
+      return 0;
 
-    int ret = exSID_init(exsidfd);
-    // TODO handle errors
+    if (exSID_init(exsidfd) < 0)
+      return 0;
+
+    exSID_audio_op(exsidfd, XS_AU_6581_6581);   // XS_AU_8580_8580
+    exSID_chipselect(exsidfd, XS_CS_CHIP0);     // XS_CS_CHIP1
+    exSID_clockselect(exsidfd, ntsc ? XS_CL_NTSC : XS_CL_PAL);
+    exSID_audio_op(exsidfd, XS_AU_UNMUTE);
 
     useexsid = 1;
     timer = SDL_AddTimer(1000 / framerate, sound_timer, NULL);
@@ -355,8 +362,8 @@ void sound_uninit(void)
       }
     }
 
-    int ret = exSID_exit(exsidfd);
-    // TODO handle errors
+    exSID_audio_op(exsidfd, XS_AU_MUTE);
+    exSID_exit(exsidfd);
 
     exSID_free(exsidfd);
     exsidfd = NULL;
@@ -520,6 +527,9 @@ void sound_playrout(void)
 #ifdef USE_EXSID
   else if (useexsid)
   {
+    unsigned cycles = 1000000 / framerate;
+    cycles -= SIDWRITEDELAY*NUMSIDREGS;
+    exSID_delay(exsidfd, cycles);
     for (c = 0; c < NUMSIDREGS; c++)
     {
       unsigned o = sid_getorder(c);
