@@ -60,6 +60,7 @@ unsigned mr = DEFAULTMIXRATE;
 unsigned writer = 0;
 unsigned hardsid = 0;
 unsigned catweasel = 0;
+unsigned exsid = 0;
 unsigned interpolate = 2;
 unsigned residdelay = 0;
 unsigned hardsidbufinteractive = 20;
@@ -166,6 +167,7 @@ int main(int argc, char **argv)
     getparam(configfile, (unsigned *)&stepsize);
     getparam(configfile, &multiplier);
     getparam(configfile, &catweasel);
+    getparam(configfile, &exsid);
     getparam(configfile, &adparam);
     getparam(configfile, &interpolate);
     getparam(configfile, &patterndispmode);
@@ -333,6 +335,10 @@ int main(int argc, char **argv)
         case 'w':
         sscanf(&argv[c][2], "%u", &bigwindow);
         break;
+  
+        case 'x':
+        sscanf(&argv[c][2], "%u", &exsid);
+        break;
       }
     }
     else
@@ -398,7 +404,7 @@ int main(int argc, char **argv)
   clearsong(1,1,1,1,1);
 
   // Init sound
-  if (!sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate))
+  if (!sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid))
   {
     printtextc(MAX_ROWS/2-1,15,"Sound init failed. Press any key to run without sound (notice that song timer won't start)");
     waitkeynoupdate();
@@ -450,6 +456,7 @@ int main(int argc, char **argv)
                         ";Pattern highlight step size\n%d\n\n"
                         ";Speed multiplier (0 = 25Hz, 1 = 1X, 2 = 2X etc.)\n%d\n\n"
                         ";Use CatWeasel SID (0 = off, 1 = on)\n%d\n\n"
+                        ";Use exSID (0 = off, 1 = on)\n%d\n\n"
                         ";Hardrestart ADSR parameter\n$%04x\n\n"
                         ";reSID resampling mode (0 = fast, 1 = interpolation, 2 = resampling, 3 = fastmem resampling)\n%d\n\n"
                         ";Pattern display mode (0 = decimal, 1 = hex, 2 = decimal w/dots, 3 = hex w/dots)\n%d\n\n"
@@ -480,6 +487,7 @@ int main(int argc, char **argv)
     stepsize,
     multiplier,
     catweasel,
+    exsid,
     adparam,
     interpolate,
     patterndispmode,
@@ -838,12 +846,12 @@ void mousecommands(void)
       if ((mousex >= 49+10) && (mousex <= 52+10))
       {
         ntsc ^= 1;
-        sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate);
+        sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid);
       }
       if ((mousex >= 54+10) && (mousex <= 57+10))
       {
         sidmodel ^= 1;
-        sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate);
+        sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid);
       }
       if ((mousex >= 62+10) && (mousex <= 65+10)) editadsr();
       if ((mousex >= 67+10) && (mousex <= 68+10)) prevmultiplier();
@@ -1063,7 +1071,7 @@ void generalcommands(void)
     else
     {
       sidmodel ^= 1;
-      sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate);
+      sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid);
     }
     break;
 
@@ -1428,7 +1436,7 @@ void prevmultiplier(void)
   if (multiplier > 0)
   {
     multiplier--;
-    sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate);
+    sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid);
   }
 }
 
@@ -1437,7 +1445,7 @@ void nextmultiplier(void)
   if (multiplier < 16)
   {
     multiplier++;
-    sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate);
+    sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid);
   }
 }
 

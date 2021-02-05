@@ -8,12 +8,17 @@
 #include <windows.h>
 #endif
 
+#ifdef USE_EXSID
+#  include <exSID.h>
+#endif
+
 #include "goattrk2.h"
 
 // General / reSID output
 int playspeed;
 int usehardsid = 0;
 int usecatweasel = 0;
+int useexsid = 0;
 int initted = 0;
 int firsttimeinit = 1;
 unsigned framerate = PALFRAMERATE;
@@ -71,7 +76,9 @@ int catweaselfd = -1;
 
 #endif
 
-int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsigned m, unsigned ntsc, unsigned multiplier, unsigned catweasel, unsigned interpolate, unsigned customclockrate)
+void* exsidfd = NULL;
+
+int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsigned m, unsigned ntsc, unsigned multiplier, unsigned catweasel, unsigned interpolate, unsigned customclockrate, unsigned exsid)
 {
   int c;
 
@@ -196,6 +203,20 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
     goto SOUNDOK;
   }
 
+#ifdef USE_EXSID
+  if (exsid)
+  {
+    exsidfd = exSID_new();
+
+    int ret = exSID_init(exsidfd);
+    // TODO handle errors
+
+    useexsid = 1;
+    timer = SDL_AddTimer(1000 / framerate, sound_timer, NULL);
+    goto SOUNDOK;
+  }
+#endif
+
   if (!buffer) buffer = (Sint16*)malloc(MIXBUFFERSIZE * sizeof(Sint16));
   if (!buffer) return 0;
 
@@ -235,7 +256,7 @@ void sound_uninit(void)
   // not mixing stuff anymore, and we can safely delete related structures
   SDL_Delay(50);
 
-  if (usehardsid || usecatweasel)
+  if (usehardsid || usecatweasel || useexsid)
   {
     #ifdef __WIN32__
     if (!playerthread)
@@ -254,7 +275,7 @@ void sound_uninit(void)
   }
   else
   {
-      snd_setcustommixer(NULL);
+    snd_setcustommixer(NULL);
     snd_player = NULL;
   }
 
@@ -322,6 +343,25 @@ void sound_uninit(void)
     }
     #endif
   }
+
+#ifdef USE_EXSID
+  if (useexsid)
+  {
+    if (exsidfd != NULL)
+    {
+      for (c = 0; c < NUMSIDREGS; c++)
+      {
+        exSID_clkdwrite(exsidfd, SIDWRITEDELAY, c, 0x00);
+      }
+    }
+
+    int ret = exSID_exit(exsidfd);
+    // TODO handle errors
+
+    exSID_free(exsidfd);
+    exsidfd = NULL;
+  }
+#endif
 }
 
 void sound_suspend(void)
@@ -477,6 +517,16 @@ void sound_playrout(void)
     }
     #endif
   }
+#ifdef USE_EXSID
+  else if (useexsid)
+  {
+    for (c = 0; c < NUMSIDREGS; c++)
+    {
+      unsigned o = sid_getorder(c);
+      exSID_clkdwrite(exsidfd, SIDWRITEDELAY, o, sidreg[o]);
+    }
+  }
+#endif
 }
 
 void sound_mixer(Sint32 *dest, unsigned samples)
