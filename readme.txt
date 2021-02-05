@@ -228,6 +228,8 @@ model 8580 and to load "dojo.sng" on startup.
 -Xxx Set window type (0 = window, 1 = fullscreen) DEFAULT=window
 -Yxx Path to a Scala tuning file .scl
 -Zxx Set random reSID write delay in cycles (0 = off) DEFAULT=off
+-wxx Set window scale factor (1 = no scaling, 2 to 4 = 2 to 4 times bigger window) DEFAULT=1
+-xxx Use exdSID (0 = off, 1 = on)
 -N   Use NTSC timing
 -P   Use PAL timing (DEFAULT)
 -W   Write emulated sound output to a file SIDAUDIO.RAW
