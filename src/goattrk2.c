@@ -168,7 +168,6 @@ int main(int argc, char **argv)
     getparam(configfile, (unsigned *)&stepsize);
     getparam(configfile, &multiplier);
     getparam(configfile, &catweasel);
-    getparam(configfile, &exsid);
     getparam(configfile, &adparam);
     getparam(configfile, &interpolate);
     getparam(configfile, &patterndispmode);
@@ -186,6 +185,7 @@ int main(int argc, char **argv)
     getfloatparam(configfile, &equaldivisionsperoctave);
     getstringparam(configfile, specialnotenames);
     getstringparam(configfile, scalatuningfilepath);
+    getparam(configfile, &exsid);
     fclose(configfile);
   }
 
@@ -457,7 +457,6 @@ int main(int argc, char **argv)
                         ";Pattern highlight step size\n%d\n\n"
                         ";Speed multiplier (0 = 25Hz, 1 = 1X, 2 = 2X etc.)\n%d\n\n"
                         ";Use CatWeasel SID (0 = off, 1 = on)\n%d\n\n"
-                        ";Use exSID (0 = off, 1 = on)\n%d\n\n"
                         ";Hardrestart ADSR parameter\n$%04x\n\n"
                         ";reSID resampling mode (0 = fast, 1 = interpolation, 2 = resampling, 3 = fastmem resampling)\n%d\n\n"
                         ";Pattern display mode (0 = decimal, 1 = hex, 2 = decimal w/dots, 3 = hex w/dots)\n%d\n\n"
@@ -470,11 +469,12 @@ int main(int argc, char **argv)
                         ";HardSID interactive mode buffer size (in milliseconds, 0 = maximum/no flush)\n%d\n\n"
                         ";HardSID playback mode buffer size (in milliseconds, 0 = maximum/no flush)\n%d\n\n"
                         ";Window type (0 = window, 1 = fullscreen)\n%d\n\n"
-                                    ";window scale factor (1 = no scaling, 2 to 4 = 2 to 4 times bigger window)\n%d\n\n"
+                         ";window scale factor (1 = no scaling, 2 to 4 = 2 to 4 times bigger window)\n%d\n\n"
                         ";Base pitch of A-4 in Hz (0 = use default frequencytable)\n%f\n\n"
                         ";Equal divisions per octave (12 = default, 8.2019143 = Bohlen-Pierce)\n%f\n\n"
-                                   ";Special note names (2 chars for every note in an octave/cycle)\n%s\n\n"
-                                   ";Path to a Scala tuning file .scl\n%s\n\n",
+                        ";Special note names (2 chars for every note in an octave/cycle)\n%s\n\n"
+                        ";Path to a Scala tuning file .scl\n%s\n\n"
+                        ";Use exSID (0 = off, 1 = on)\n%d\n\n",
     b,
     mr,
     hardsid,
@@ -488,7 +488,6 @@ int main(int argc, char **argv)
     stepsize,
     multiplier,
     catweasel,
-    exsid,
     adparam,
     interpolate,
     patterndispmode,
@@ -503,9 +502,10 @@ int main(int argc, char **argv)
     win_fullscreen,
     bigwindow,
     basepitch,
-     equaldivisionsperoctave,
-     specialnotenames,
-     scalatuningfilepath);
+    equaldivisionsperoctave,
+    specialnotenames,
+    scalatuningfilepath,
+    exsid);
     fclose(configfile);
   }
 
