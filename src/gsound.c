@@ -76,7 +76,10 @@ int catweaselfd = -1;
 
 #endif
 
+#ifdef USE_EXSID
 void* exsidfd = NULL;
+unsigned exsidDelay = 0;
+#endif
 
 int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsigned m, unsigned ntsc, unsigned multiplier, unsigned catweasel, unsigned interpolate, unsigned customclockrate, unsigned exsid)
 {
@@ -213,10 +216,27 @@ int sound_init(unsigned b, unsigned mr, unsigned writer, unsigned hardsid, unsig
     if (exSID_init(exsidfd) < 0)
       return 0;
 
-    exSID_audio_op(exsidfd, m == 1 ? XS_AU_8580_8580 : XS_AU_6581_6581);
-    exSID_chipselect(exsidfd, m == 1 ? XS_CS_CHIP1 : XS_CS_CHIP0);
-    exSID_clockselect(exsidfd, ntsc ? XS_CL_NTSC : XS_CL_PAL);
-    exSID_audio_op(exsidfd, XS_AU_UNMUTE);
+    int model = exSID_hwmodel(exsidfd);
+    switch (model)
+    {
+      case XS_MD_PLUS:
+      exSID_audio_op(exsidfd, m == 1 ? XS_AU_8580_8580 : XS_AU_6581_6581);
+      exSID_clockselect(exsidfd, ntsc ? XS_CL_NTSC : XS_CL_PAL);
+      exSID_audio_op(exsidfd, XS_AU_UNMUTE);
+      exsidDelay = ntsc ? NTSCCLOCKRATE : PALCLOCKRATE;
+      break;
+
+      case XS_MD_STD:
+      exSID_chipselect(exsidfd, m == 1 ? XS_CS_CHIP1 : XS_CS_CHIP0);
+      exsidDelay = 1000000;
+      break;
+
+      default:
+      return 0;
+    }
+
+    exsidDelay /= framerate;
+    exsidDelay -= SIDWRITEDELAY*NUMSIDREGS;
 
     useexsid = 1;
     timer = SDL_AddTimer(1000 / framerate, sound_timer, NULL);
@@ -527,9 +547,7 @@ void sound_playrout(void)
 #ifdef USE_EXSID
   else if (useexsid)
   {
-    unsigned cycles = (ntsc ? NTSCCLOCKRATE : PALCLOCKRATE) / framerate;
-    cycles -= SIDWRITEDELAY*NUMSIDREGS;
-    exSID_delay(exsidfd, cycles);
+    exSID_delay(exsidfd, exsidDelay);
     for (c = 0; c < NUMSIDREGS; c++)
     {
       unsigned o = sid_getorder(c);
