@@ -180,7 +180,7 @@ if (use_midi)
     target_compile_definitions(goattrk2 PUBLIC USE_MIDI_INPUT)
 endif(use_midi)
 
-find_package(exsid)
+find_package(ExSID)
 if (EXSID_FOUND)
     target_compile_definitions(goattrk2 PUBLIC USE_EXSID)
     include_directories(${EXSID_INCLUDE_DIR})
