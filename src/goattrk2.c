@@ -60,6 +60,7 @@ unsigned mr = DEFAULTMIXRATE;
 unsigned writer = 0;
 unsigned hardsid = 0;
 unsigned catweasel = 0;
+unsigned exsid = 0;
 unsigned interpolate = 2;
 unsigned residdelay = 0;
 unsigned hardsidbufinteractive = 20;
@@ -119,6 +120,7 @@ char* usage[] = {
     "-Yxx Path to a Scala tuning file .scl",
     "-Zxx Set random reSID write delay in cycles (0 = off) DEFAULT=off",
     "-wxx Set window scale factor (1 = no scaling, 2 to 4 = 2 to 4 times bigger window) DEFAULT=1",
+    "-xxx Use exdSID (0 = off, 1 = on)",
     "-N   Use NTSC timing",
     "-P   Use PAL timing (DEFAULT)",
     "-W   Write sound output to a file SIDAUDIO.RAW",
@@ -183,6 +185,7 @@ int main(int argc, char **argv)
     getfloatparam(configfile, &equaldivisionsperoctave);
     getstringparam(configfile, specialnotenames);
     getstringparam(configfile, scalatuningfilepath);
+    getparam(configfile, &exsid);
     fclose(configfile);
   }
 
@@ -333,6 +336,10 @@ int main(int argc, char **argv)
         case 'w':
         sscanf(&argv[c][2], "%u", &bigwindow);
         break;
+  
+        case 'x':
+        sscanf(&argv[c][2], "%u", &exsid);
+        break;
       }
     }
     else
@@ -398,7 +405,7 @@ int main(int argc, char **argv)
   clearsong(1,1,1,1,1);
 
   // Init sound
-  if (!sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate))
+  if (!sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid))
   {
     printtextc(MAX_ROWS/2-1,15,"Sound init failed. Press any key to run without sound (notice that song timer won't start)");
     waitkeynoupdate();
@@ -462,11 +469,12 @@ int main(int argc, char **argv)
                         ";HardSID interactive mode buffer size (in milliseconds, 0 = maximum/no flush)\n%d\n\n"
                         ";HardSID playback mode buffer size (in milliseconds, 0 = maximum/no flush)\n%d\n\n"
                         ";Window type (0 = window, 1 = fullscreen)\n%d\n\n"
-                                    ";window scale factor (1 = no scaling, 2 to 4 = 2 to 4 times bigger window)\n%d\n\n"
+                         ";window scale factor (1 = no scaling, 2 to 4 = 2 to 4 times bigger window)\n%d\n\n"
                         ";Base pitch of A-4 in Hz (0 = use default frequencytable)\n%f\n\n"
                         ";Equal divisions per octave (12 = default, 8.2019143 = Bohlen-Pierce)\n%f\n\n"
-                                   ";Special note names (2 chars for every note in an octave/cycle)\n%s\n\n"
-                                   ";Path to a Scala tuning file .scl\n%s\n\n",
+                        ";Special note names (2 chars for every note in an octave/cycle)\n%s\n\n"
+                        ";Path to a Scala tuning file .scl\n%s\n\n"
+                        ";Use exSID (0 = off, 1 = on)\n%d\n\n",
     b,
     mr,
     hardsid,
@@ -494,9 +502,10 @@ int main(int argc, char **argv)
     win_fullscreen,
     bigwindow,
     basepitch,
-     equaldivisionsperoctave,
-     specialnotenames,
-     scalatuningfilepath);
+    equaldivisionsperoctave,
+    specialnotenames,
+    scalatuningfilepath,
+    exsid);
     fclose(configfile);
   }
 
@@ -838,12 +847,12 @@ void mousecommands(void)
       if ((mousex >= 49+10) && (mousex <= 52+10))
       {
         ntsc ^= 1;
-        sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate);
+        sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid);
       }
       if ((mousex >= 54+10) && (mousex <= 57+10))
       {
         sidmodel ^= 1;
-        sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate);
+        sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid);
       }
       if ((mousex >= 62+10) && (mousex <= 65+10)) editadsr();
       if ((mousex >= 67+10) && (mousex <= 68+10)) prevmultiplier();
@@ -1063,7 +1072,7 @@ void generalcommands(void)
     else
     {
       sidmodel ^= 1;
-      sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate);
+      sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid);
     }
     break;
 
@@ -1428,7 +1437,7 @@ void prevmultiplier(void)
   if (multiplier > 0)
   {
     multiplier--;
-    sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate);
+    sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid);
   }
 }
 
@@ -1437,7 +1446,7 @@ void nextmultiplier(void)
   if (multiplier < 16)
   {
     multiplier++;
-    sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate);
+    sound_init(b, mr, writer, hardsid, sidmodel, ntsc, multiplier, catweasel, interpolate, customclockrate, exsid);
   }
 }
 
