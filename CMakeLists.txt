@@ -180,7 +180,7 @@ find_package(ALSA)
 if (ALSA_FOUND)
     target_compile_definitions(goattrk2 PUBLIC __LINUX_ALSA__)
     include_directories(${ALSA_INCLUDE_DIR})
-    target_link_libraries(goattrk2 ${ALSA_LIBRARY})
+    target_link_libraries(goattrk2 ${ALSA_LIBRARY} pthread)
     set(use_midi ON)
 endif(ALSA_FOUND)
 
