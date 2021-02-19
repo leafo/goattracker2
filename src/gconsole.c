@@ -36,12 +36,12 @@ unsigned bigwindow = 1;
 void loadexternalpalette(void);
 void initicon(void);
 
-inline void setcharcolor(unsigned *dptr, short ch, short color)
+static inline void setcharcolor(unsigned *dptr, short ch, short color)
 {
   *dptr = (ch & 0xff) | (color << 16);
 }
 
-inline void setcolor(unsigned *dptr, short color)
+static inline void setcolor(unsigned *dptr, short color)
 {
   *dptr = (*dptr & 0xffff) | (color << 16);
 }
