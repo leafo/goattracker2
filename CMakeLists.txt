@@ -118,8 +118,14 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/bme)
 include_directories(${CMAKE_SOURCE_DIR}/src/asm)
 
+find_package(SDL2 REQUIRED)
+
+get_target_property(SDL2_INCLUDE_DIRS SDL2::SDL2 INTERFACE_INCLUDE_DIRECTORIES)
+
 add_executable(datafile src/bme/datafile.c src/bme/bme_end.c)
 add_executable(dat2inc src/bme/dat2inc.c)
+
+target_include_directories(datafile PUBLIC ${SDL2_INCLUDE_DIRS})
 
 add_custom_command(
   OUTPUT goattrk2.dat
@@ -141,12 +147,26 @@ add_executable(mod2sng ${MOD2SNG_SOURCES})
 add_executable(ins2snd2 ${INS2SND2_SOURCES})
 add_executable(sngspli2 ${SNGSPLI2_SOURCES})
 
-find_package(SDL2 REQUIRED)
+target_include_directories(mod2sng PUBLIC ${SDL2_INCLUDE_DIRS})
+target_include_directories(ins2snd2 PUBLIC ${SDL2_INCLUDE_DIRS})
+target_include_directories(sngspli2 PUBLIC ${SDL2_INCLUDE_DIRS})
 
-include_directories(${SDL2_INCLUDE_DIR})
+if(MINGW)
+    set(LIB_MINGW mingw32)
+endif()
 
-target_link_libraries(goattrk2 ${SDL2_LIBRARY})
-target_link_libraries(gt2reloc ${SDL2_LIBRARY})
+target_link_libraries(goattrk2 ${LIB_MINGW} SDL2::SDL2main)
+target_link_libraries(gt2reloc ${LIB_MINGW} SDL2::SDL2main)
+
+OPTION(STATIC "Static build" OFF)
+IF(STATIC)
+    set(CMAKE_EXE_LINKER_FLAGS "-static")
+    target_link_libraries(goattrk2 SDL2::SDL2-static)
+    target_link_libraries(gt2reloc SDL2::SDL2-static)
+ELSE(STATIC)
+    target_link_libraries(goattrk2 SDL2::SDL2)
+    target_link_libraries(gt2reloc SDL2::SDL2)
+ENDIF(STATIC)
 
 find_package(Jack)
 IF(JACK_FOUND)
