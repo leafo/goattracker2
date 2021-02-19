@@ -1,11 +1,9 @@
 name: Build Snapshot Release
 
 on:
-    workflow_dispatch:
-#on:
-#  push:
-#    tags:
-#      - "v*"
+  push:
+    tags:
+      - "v*"
 
 jobs:
   build:
@@ -20,23 +18,29 @@ jobs:
         update: true
         install: >-
           git
+          zip
           base-devel
           mingw-w64-x86_64-toolchain
           mingw-w64-x86_64-cmake
           mingw-w64-x86_64-SDL2
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.ref }}
+    - name: Get the tag name
+      id: get_tag_name
+      run: echo ::set-output name=tagname::${GITHUB_REF#refs/tags/}
     - name: build
       run: |
         mkdir build
         cd build
-        cmake -G 'MSYS Makefiles' ..
+        cmake -G 'MSYS Makefiles' -DCMAKE_BUILD_TYPE=Release -DSTATIC=ON ..
         make
-        zip goattrk2-${{ github.ref }}.zip goattrk2.exe
-#    - name: Upload Release Binary
-#    - uses: svenstaro/upload-release-action@v1-release
-#      with:
-#        repo_token: ${{ secrets.GITHUB_TOKEN }}
-#        file: build/goattrk2.exe
-#        tag: ${{ github.ref }}
-#        file_glob: true
-#        overwrite: true
+        cp ../readme.* ../authors ../copying ../goat_tracker_commands.pdf .
+        zip gt2-unofficial_build-${{ steps.get_tag_name.outputs.tagname }}.zip *.exe readme.* authors copying goat_tracker_commands.pdf
+    - uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/gt2-unofficial_build-${{ steps.get_tag_name.outputs.tagname }}.zip
+        tag: ${{ github.ref }}
+        file_glob: true
+        overwrite: true
