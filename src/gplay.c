@@ -331,7 +331,7 @@ void playroutine(void)
           cptr->tempo ^= 1;
         }
         // Check for illegally high gatetimer and stop the song in this case
-        if (chn->gatetimer > cptr->tick)
+        if (cptr->gatetimer > cptr->tick)
           stopsong();
       }
       goto WAVEEXEC;
