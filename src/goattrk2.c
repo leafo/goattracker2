@@ -1,5 +1,5 @@
 //
-// GOATTRACKER v2.75
+// GOATTRACKER v2.76
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ char instrpath[MAX_PATHNAME];
 char packedpath[MAX_PATHNAME];
 
 extern char *notename[];
-char *programname = "$VER: GoatTracker v2.75";
+char *programname = "$VER: GoatTracker v2.76";
 char specialnotenames[186];
 char scalatuningfilepath[MAX_PATHNAME];
 char tuningname[64];
@@ -161,6 +161,8 @@ int main(int argc, char **argv)
     strcat(filename, "/.config/goattrk/goattrk2.cfg");
   }
   #endif
+  specialnotenames[0] = 0;
+  scalatuningfilepath[0] = 0;
   configfile = fopen(filename, "rt");
   if (configfile)
   {
@@ -386,6 +388,8 @@ int main(int argc, char **argv)
   if (optimizerealtime > 1) optimizerealtime = 1;
   if (residdelay > 63) residdelay = 63;
   if (customclockrate < 100) customclockrate = 0;
+  if (bigwindow < 1) bigwindow = 1;
+  if (bigwindow > 4) bigwindow = 4;
 
   // Read Scala tuning file
   if (scalatuningfilepath[0] != '0' && scalatuningfilepath[1] != '\0')
@@ -487,7 +491,7 @@ int main(int argc, char **argv)
                         ";HardSID interactive mode buffer size (in milliseconds, 0 = maximum/no flush)\n%d\n\n"
                         ";HardSID playback mode buffer size (in milliseconds, 0 = maximum/no flush)\n%d\n\n"
                         ";Window type (0 = window, 1 = fullscreen)\n%d\n\n"
-                         ";window scale factor (1 = no scaling, 2 to 4 = 2 to 4 times bigger window)\n%d\n\n"
+                        ";window scale factor (1 = no scaling, 2 to 4 = 2 to 4 times bigger window)\n%d\n\n"
                         ";Base pitch of A-4 in Hz (0 = use default frequencytable)\n%f\n\n"
                         ";Equal divisions per octave (12 = default, 8.2019143 = Bohlen-Pierce)\n%f\n\n"
                         ";Special note names (2 chars for every note in an octave/cycle)\n%s\n\n"
@@ -1528,7 +1532,7 @@ void setspecialnotenames()
     {
       if (specialnotenames[j] == '\0')
         break;
-     if (i < 93)
+      if (i < 93)
       {
         name = malloc(4);
         strncpy(name, specialnotenames + j, 2);
@@ -1538,7 +1542,7 @@ void setspecialnotenames()
         i++;
       }
     }
-   oct++;
+    oct++;
   }
 }
 
@@ -1552,7 +1556,7 @@ void readscalatuningfile()
   double numerator;
   double denominator;
   double centvalue;
-   
+
   scalatuningfile = fopen(scalatuningfilepath, "rt");
   if (scalatuningfile)
   {
@@ -1577,7 +1581,7 @@ void readscalatuningfile()
     sscanf(configptr, "%d", &tuningcount);
    
     // Tunings 
-     for (i = 0; i < tuningcount; i++)
+    for (i = 0; i < tuningcount; i++)
     {
       for (;;)
       {

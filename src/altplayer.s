@@ -160,6 +160,7 @@ mt_tick0_0:
                 jmp mt_tick0_34
               .ELSE
               .IF (NOVIB == 0)
+                lda #$00
                 jmp mt_tick0_34
               .ENDIF
               .ENDIF

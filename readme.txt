@@ -1,4 +1,4 @@
-GoatTracker v2.75
+GoatTracker v2.76
 -----------------
 
 Editor by Lasse Öörni (loorni@gmail.com)
@@ -1993,3 +1993,7 @@ v2.75     - Added /Q command line option for setting equal divisions per octave
           - Removed the BETACONV utility, as it references a very old songformat
             and also saved in another old format.
           - Added /w command line option for setting 4 different window sizes.
+
+v2.76     - Fixed bug in packed songs with no instrument vibrato and only
+            calculated speeds.
+          - Fixed failure to start up with missing config file parameters.

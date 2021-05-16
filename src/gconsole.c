@@ -52,7 +52,7 @@ int initscreen(void)
   unsigned xsize = MAX_COLUMNS * 8;
   unsigned ysize = MAX_ROWS * 16;
 
-  if (bigwindow - 1)
+  if (bigwindow > 1)
   {
     fontwidth *= bigwindow;
     fontheight *= bigwindow;
@@ -72,7 +72,7 @@ int initscreen(void)
     if (!gfx_init(MAX_COLUMNS * fontwidth, MAX_ROWS * fontheight, 60, 0))
       return 0;
   }
-   
+
   scrbuffer = (unsigned*)malloc(MAX_COLUMNS * MAX_ROWS * sizeof(unsigned));
   prevscrbuffer = (unsigned*)malloc(MAX_COLUMNS * MAX_ROWS * sizeof(unsigned));
   if ((!scrbuffer) || (!prevscrbuffer)) return 0;
