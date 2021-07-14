@@ -10,4 +10,9 @@ A fork of [goattracker2](https://sourceforge.net/projects/goattracker2/) with th
 * XDG compliant
 * synced with goattrk 2.76 (no stereo version)
 
+---
+
+![Screenshot](https://github.com/drfiemost/goattracker2/wiki/images/goattrk2.png)
+
+
 https://github.com/drfiemost/goattracker2
