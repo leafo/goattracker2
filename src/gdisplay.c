@@ -433,30 +433,30 @@ void printstatus(void)
     if (!eamode) printbg(43+10+etnum*10+(etcolumn & 1)+(etcolumn/2)*3, 15+etpos-etview[etnum], cc, 1);
   }
 
-  printtext(40+10, 31, CTITLE, "NAME   ");
+  printtext(40+10, 31, CTITLE, "NAME     ");
   sprintf(textbuffer, "%-32s", songname);
-  printtext(47+10, 31, CEDIT, textbuffer);
+  printtext(49+10, 31, CEDIT, textbuffer);
 
-  printtext(40+10, 32, CTITLE, "AUTHOR ");
+  printtext(40+10, 32, CTITLE, "AUTHOR   ");
   sprintf(textbuffer, "%-32s", authorname);
-  printtext(47+10, 32, CEDIT, textbuffer);
+  printtext(49+10, 32, CEDIT, textbuffer);
 
-  printtext(40+10, 33, CTITLE, "COPYR. ");
+  printtext(40+10, 33, CTITLE, "RELEASED ");
   sprintf(textbuffer, "%-32s", copyrightname);
-  printtext(47+10, 33, CEDIT, textbuffer);
+  printtext(49+10, 33, CEDIT, textbuffer);
 
   if ((editmode == EDIT_NAMES) && (!eamode))
   {
     switch(enpos)
     {
       case 0:
-      printbg(47+10+strlen(songname), 31, cc, 1);
+      printbg(49+10+strlen(songname), 31, cc, 1);
       break;
       case 1:
-      printbg(47+10+strlen(authorname), 32, cc, 1);
+      printbg(49+10+strlen(authorname), 32, cc, 1);
       break;
       case 2:
-      printbg(47+10+strlen(copyrightname), 33, cc, 1);
+      printbg(49+10+strlen(copyrightname), 33, cc, 1);
       break;
     }
   }
