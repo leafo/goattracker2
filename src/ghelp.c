@@ -326,14 +326,14 @@ void onlinehelp(int standalone,int context)
     if(!lastrow) lastrow=left;
 
     printblank(0, 0, MAX_COLUMNS);
+    printbg(0, 0, CDBLUE, MAX_COLUMNS);
     sprintf(textbuffer, "%s Online Help", programname);
-    printtext(0, 0, HELP_HEADER, textbuffer);
+    printtext(0, 0, CHEADER, textbuffer);
     if(standalone) {
-      printtext(55, 0, HELP_HEADER, "Arrows/PgUp/PgDn/Home/End scroll, ESC exits");
+      printtext(55, 0, CHEADER, "Arrows/PgUp/PgDn/Home/End scroll, ESC exits");
     } else {
-      printtext(34, 0, HELP_HEADER, "Arrows/PgUp/PgDn/Home/End scroll, F12 toggles context, others exit");
+      printtext(34, 0, CHEADER, "Arrows/PgUp/PgDn/Home/End scroll, F12 toggles context, others exit");
     }
-    printbg(0, 0, 1, MAX_COLUMNS);
 
     fliptoscreen();
     waitkeymousenoupdate();

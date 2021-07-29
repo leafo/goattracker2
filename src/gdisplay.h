@@ -25,7 +25,7 @@
 #define CCOMMAND CLGREY
 #define CTITLE   CWHITE
 
-#define CHEADER CWHITE|(CDBLUE<<4)
+#define CHEADER CLBLUE|(CDBLUE<<4)
 
 void printmainscreen(void);
 void displayupdate(void);

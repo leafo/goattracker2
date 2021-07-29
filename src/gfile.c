@@ -414,8 +414,8 @@ int fileselector(char *name, char *path, char *filter, char *title, int filemode
       printblank(50-(MAX_FILENAME+10)/2, 3+c, MAX_FILENAME+10);
     }
     drawbox(50-(MAX_FILENAME+10)/2, 3, 15, MAX_FILENAME+10, VISIBLEFILES+7);
-    printblankc(50-(MAX_FILENAME+10)/2+1, 4, 15+16,MAX_FILENAME+8);
-    printtext(50-(MAX_FILENAME+10)/2+1, 4, 15+16, title);
+    printblankc(50-(MAX_FILENAME+10)/2+1, 4, CHEADER, MAX_FILENAME+8);
+    printtext(50-(MAX_FILENAME+10)/2+1, 4, CHEADER, title);
 
     for (c = 0; c < VISIBLEFILES; c++)
     {
