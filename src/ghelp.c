@@ -244,6 +244,14 @@ void onlinehelp(int standalone,int context)
 
   int lastrow=0;
 
+  unsigned char color_header = HELP_HEADER;
+  unsigned char color_normal = HELP_NORMAL;
+  if (!standalone)
+  {
+    color_header = colors.CTITLE;
+    color_normal = colors.CNORMAL;
+  }
+
   for (;;)
   {
     int left = hview + 2;
@@ -251,70 +259,70 @@ void onlinehelp(int standalone,int context)
 
     clearscreen();
     if(!context) {
-      printtext(0, left++, HELP_HEADER, "GENERAL KEYS");
-      left = printrows(0,left,HELP_NORMAL, genkeys);
+      printtext(0, left++, color_header, "GENERAL KEYS");
+      left = printrows(0,left,color_normal, genkeys);
       left++;
 
-      printtext(40,right++, HELP_HEADER, "PATTERN EDIT MODE");
-      right = printrows(40,right,HELP_NORMAL, patternkeys);
+      printtext(40,right++, color_header, "PATTERN EDIT MODE");
+      right = printrows(40,right,color_normal, patternkeys);
       right++;
     
-      printtext(0, left++, HELP_HEADER, "SONG EDIT MODE");
-      left = printrows(0,left,HELP_NORMAL, songkeys);
+      printtext(0, left++, color_header, "SONG EDIT MODE");
+      left = printrows(0,left,color_normal, songkeys);
       left++;
 
-      printtext(0, left++, HELP_HEADER, "SONGNAME EDIT MODE");
-      printtext(0, left++, HELP_NORMAL, "Use cursor UP/DOWN to change rows");
+      printtext(0, left++, color_header, "SONGNAME EDIT MODE");
+      printtext(0, left++, color_normal, "Use cursor UP/DOWN to change rows");
       left++;
 
-      printtext(40,right++, HELP_HEADER, "INSTRUMENT/TABLE EDIT MODE");
-      right = printrows(40,right,HELP_NORMAL, instkeys);
+      printtext(40,right++, color_header, "INSTRUMENT/TABLE EDIT MODE");
+      right = printrows(40,right,color_normal, instkeys);
       right++;
     
       left = (left<right ? right : left);
     
-      printtext(0, left++, HELP_HEADER, "PATTERN COMMANDS");
-      left = printrows(0,left,HELP_NORMAL, pattcmds);
+      printtext(0, left++, color_header, "PATTERN COMMANDS");
+      left = printrows(0,left,color_normal, pattcmds);
       left++;
 
-      printtext(0, left++, HELP_HEADER, "INSTRUMENT PARAMETERS");
-      left = printrows(0,left,HELP_NORMAL, instparm);
+      printtext(0, left++, color_header, "INSTRUMENT PARAMETERS");
+      left = printrows(0,left,color_normal, instparm);
       left++;
 
-      printtext(0, left++, HELP_HEADER,"TABLES");
-      left = printrows(0,left,HELP_NORMAL, tables);
+      printtext(0, left++, color_header,"TABLES");
+      left = printrows(0,left,color_normal, tables);
       left++;
     } else {
       switch(editmode) {
       case EDIT_PATTERN:      
-        printtext(0,left++, HELP_HEADER, "PATTERN EDIT MODE");
-        left = printrows(0,left,HELP_NORMAL, patternkeys);
+        printtext(0,left++, color_header, "PATTERN EDIT MODE");
+        left = printrows(0,left,color_normal, patternkeys);
         left++;
-        printtext(0, left++, HELP_HEADER, "PATTERN COMMANDS");
-        left = printrows(0,left,HELP_NORMAL, pattcmds);
+        printtext(0, left++, color_header, "PATTERN COMMANDS");
+        left = printrows(0,left,color_normal, pattcmds);
         left++;
         break;
       case EDIT_ORDERLIST:
-        printtext(0, left++, HELP_HEADER, "SONG EDIT MODE");
-        left = printrows(0,left,HELP_NORMAL, songkeys);
+        printtext(0, left++, color_header, "SONG EDIT MODE");
+        left = printrows(0,left,color_normal, songkeys);
         left++;
         break;
       case EDIT_INSTRUMENT:
-        printtext(0,left++, HELP_HEADER, "INSTRUMENT/TABLE EDIT MODE");
-        left = printrows(0,left,HELP_NORMAL, instkeys);
+        printtext(0,left++, color_header, "INSTRUMENT/TABLE EDIT MODE");
+        left = printrows(0,left,color_normal, instkeys);
         left++;
-        printtext(0, left++, HELP_HEADER, "INSTRUMENT PARAMETERS");
-        left = printrows(0,left,HELP_NORMAL, instparm);
+        printtext(0, left++, color_header, "INSTRUMENT PARAMETERS");
+        left = printrows(0,left,color_normal, instparm);
         left++;
         break;
       case EDIT_NAMES:
-        printtext(0, left++, HELP_HEADER, "SONGNAME EDIT MODE");
-        printtext(0, left++, HELP_NORMAL, "Use cursor UP/DOWN to change rows");
+        printtext(0, left++, color_header, "SONGNAME EDIT MODE");
+        printtext(0, left++, color_normal, "Use cursor UP/DOWN to change rows");
         left++;
         break;
       case EDIT_TABLES:
-        printtext(0,left++, HELP_HEADER, "INSTRUMENT/TABLE EDIT MODE");
-        left = printrows(0,left++,HELP_NORMAL, instkeys);
+        printtext(0,left++, color_header, "INSTRUMENT/TABLE EDIT MODE");
+        left = printrows(0,left++,color_normal, instkeys);
         left++;
         break;
       default:

@@ -62,6 +62,7 @@
 
 typedef struct
 {
+  unsigned char CBKGND;
   unsigned char CNORMAL;
   unsigned char CMUTE;
   unsigned char CEDIT;
@@ -69,6 +70,7 @@ typedef struct
   unsigned char CCOMMAND;
   unsigned char CTITLE;
   unsigned char CHDRBG;
+  unsigned char CHDRFG;
   unsigned char CHEADER;
 } COLORS;
 

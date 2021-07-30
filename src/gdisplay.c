@@ -24,14 +24,19 @@ int timeframe = 0;
 
 void initcolorscheme(void)
 {
-  colors.CNORMAL  = CGREY;
-  colors.CMUTE    = CDGREY;
-  colors.CEDIT    = CLGREEN;
-  colors.CPLAYING = CLRED;
-  colors.CCOMMAND = CLGREY;
-  colors.CTITLE   = CWHITE;
-  colors.CHDRBG   = CDBLUE;
-  colors.CHEADER  = CLBLUE|(colors.CHDRBG<<4);
+  colors.CBKGND   = CDBLUE;
+
+  colors.CNORMAL  = CLBLUE |(colors.CBKGND<<4);
+  colors.CMUTE    = CDGREY |(colors.CBKGND<<4);
+  colors.CEDIT    = CLGREEN|(colors.CBKGND<<4);
+  colors.CPLAYING = CLRED  |(colors.CBKGND<<4);
+  colors.CCOMMAND = CLGREY |(colors.CBKGND<<4);
+  colors.CTITLE   = CWHITE |(colors.CBKGND<<4);
+
+  colors.CHDRBG   = CLBLUE;
+  colors.CHDRFG   = CDBLUE;
+
+  colors.CHEADER  = colors.CHDRFG|(colors.CHDRBG<<4);
 }
 
 void printmainscreen(void)
