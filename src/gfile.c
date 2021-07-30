@@ -414,8 +414,8 @@ int fileselector(char *name, char *path, char *filter, char *title, int filemode
       printblank(50-(MAX_FILENAME+10)/2, 3+c, MAX_FILENAME+10);
     }
     drawbox(50-(MAX_FILENAME+10)/2, 3, 15, MAX_FILENAME+10, VISIBLEFILES+7);
-    printblankc(50-(MAX_FILENAME+10)/2+1, 4, CHEADER, MAX_FILENAME+8);
-    printtext(50-(MAX_FILENAME+10)/2+1, 4, CHEADER, title);
+    printblankc(50-(MAX_FILENAME+10)/2+1, 4, colors.CHEADER, MAX_FILENAME+8);
+    printtext(50-(MAX_FILENAME+10)/2+1, 4, colors.CHEADER, title);
 
     for (c = 0; c < VISIBLEFILES; c++)
     {
@@ -440,8 +440,8 @@ int fileselector(char *name, char *path, char *filter, char *title, int filemode
       {
         sprintf(textbuffer, "                                                                    ");
       }
-      color = CNORMAL;
-      if ((fileview+c) == filepos) color = CEDIT;
+      color = colors.CNORMAL;
+      if ((fileview+c) == filepos) color = colors.CEDIT;
       textbuffer[68] = 0;
       printtext(50-(MAX_FILENAME+10)/2+1, 5+c, color, textbuffer);
       if ((!filemode) && ((fileview+c) == filepos)) printbg(50-(MAX_FILENAME+10)/2+1, 5+c, cc, 68);
@@ -450,24 +450,21 @@ int fileselector(char *name, char *path, char *filter, char *title, int filemode
     printtext(50-(MAX_FILENAME+10)/2+1, 6+VISIBLEFILES, 15, "PATH:   ");
     sprintf(textbuffer, "%-60s", path);
     textbuffer[MAX_FILENAME] = 0;
-    color = CNORMAL;
-    if (filemode == 1) color = CEDIT;
+    color = (filemode == 1) ? colors.CEDIT : colors.CNORMAL;
     printtext(50-(MAX_FILENAME+10)/2+9, 6+VISIBLEFILES, color, textbuffer);
     if ((filemode == 1) && (strlen(path) < MAX_FILENAME)) printbg(50-(MAX_FILENAME+10)/2+9+strlen(path), 6+VISIBLEFILES, cc, 1);
 
     printtext(50-(MAX_FILENAME+10)/2+1, 7+VISIBLEFILES, 15, "FILTER: ");
     sprintf(textbuffer, "%-60s", filter);
     textbuffer[MAX_FILENAME] = 0;
-    color = CNORMAL;
-    if (filemode == 2) color = CEDIT;
+    color = (filemode == 2) ? colors.CEDIT : colors.CNORMAL;
     printtext(50-(MAX_FILENAME+10)/2+9, 7+VISIBLEFILES, color, textbuffer);
     if (filemode == 2) printbg(50-(MAX_FILENAME+10)/2+9+strlen(filter), 7+VISIBLEFILES, cc, 1);
 
     printtext(50-(MAX_FILENAME+10)/2+1, 8+VISIBLEFILES, 15, "NAME:   ");
     sprintf(textbuffer, "%-60s", name);
     textbuffer[MAX_FILENAME] = 0;
-    color = CNORMAL;
-    if (filemode == 3) color = CEDIT;
+    color = (filemode == 3) ? colors.CEDIT : colors.CNORMAL;
     printtext(50-(MAX_FILENAME+10)/2+9, 8+VISIBLEFILES, color, textbuffer);
     if (filemode == 3) printbg(50-(MAX_FILENAME+10)/2+9+strlen(name), 8+VISIBLEFILES, cc, 1);
 

@@ -82,6 +82,7 @@ char *programname = "$VER: GoatTracker v2.76";
 char textbuffer[MAX_PATHNAME];
 
 extern unsigned char datafile[];
+COLORS colors;
 
 #ifdef __WIN32__
 FILE *STDOUT, *STDERR;
@@ -188,6 +189,9 @@ int main(int argc, char **argv)
   } else {
       fprintf(STDOUT, "prg\n");
   }
+
+  // Init colorscheme
+  initcolorscheme();
 
   // Scan command line
   for (c = 3; c < argc; c++)

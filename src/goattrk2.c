@@ -94,6 +94,8 @@ unsigned char hexkeytbl[] = {'0', '1', '2', '3', '4', '5', '6', '7',
 
 extern unsigned char datafile[];
 
+COLORS colors;
+
 char* usage[] = {
     "Usage: goattrk2 [songname] [options]",
     "Options:",
@@ -202,6 +204,9 @@ int main(int argc, char **argv)
 
   // Init pathnames
   initpaths();
+
+  // Init colorscheme
+  initcolorscheme();
 
   // Scan command line
   for (c = 1; c < argc; c++)
