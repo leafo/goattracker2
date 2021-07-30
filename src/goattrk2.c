@@ -94,6 +94,8 @@ unsigned char hexkeytbl[] = {'0', '1', '2', '3', '4', '5', '6', '7',
 
 extern unsigned char datafile[];
 
+COLORS colors;
+
 char* usage[] = {
     "Usage: goattrk2 [songname] [options]",
     "Options:",
@@ -126,6 +128,7 @@ char* usage[] = {
     "-W   Write sound output to a file SIDAUDIO.RAW",
     "-?   Show this info again",
     "-??  Standalone online help window",
+    "--dark   Use original dark colorscheme",
 };
 
 int usagelen = (sizeof usage / sizeof usage[0]);
@@ -135,6 +138,8 @@ int main(int argc, char **argv)
   char filename[MAX_PATHNAME];
   FILE *configfile;
   int c,d;
+
+  int dark = 0;
 
   programname += sizeof "$VER:";
   // Open datafile
@@ -216,6 +221,11 @@ int main(int argc, char **argv)
       switch (argv[c][1]) //switch (toupper(argv[c][1]))
       {
         case '-':
+        if (strcmp(argv[c], "--dark") == 0)
+        {
+            dark = 1;
+            break;
+        }
         if (strcmp(argv[c], "--help"))
             break;
         case '?':
@@ -372,6 +382,9 @@ int main(int argc, char **argv)
       }
     }
   }
+
+  // Init colorscheme
+  initcolorscheme(dark);
 
   // Validate parameters
   sidmodel &= 1;

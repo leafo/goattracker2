@@ -38,12 +38,12 @@ void initicon(void);
 
 static inline void setcharcolor(unsigned *dptr, short ch, short color)
 {
-  *dptr = (ch & 0xff) | (color << 16);
+  *dptr = (ch & 0xff) | (color << 16) | (colors.CBKGND << 20);
 }
 
 static inline void setcolor(unsigned *dptr, short color)
 {
-  *dptr = (*dptr & 0xffff) | (color << 16);
+  *dptr = (*dptr & 0xffff) | (color << 16) | (colors.CBKGND << 20);
 }
 
 int initscreen(void)

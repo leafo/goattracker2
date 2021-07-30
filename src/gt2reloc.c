@@ -82,6 +82,7 @@ char *programname = "$VER: GoatTracker v2.76";
 char textbuffer[MAX_PATHNAME];
 
 extern unsigned char datafile[];
+COLORS colors;
 
 #ifdef __WIN32__
 FILE *STDOUT, *STDERR;
@@ -322,6 +323,9 @@ int main(int argc, char **argv)
       exit(-1);
     }
   }
+
+  // Init colorscheme
+  initcolorscheme(1);
 
   // Validate parameters
   sidmodel &= 1;

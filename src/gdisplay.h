@@ -18,15 +18,7 @@
 #define CYELLOW 0xE
 #define CWHITE  0xF
 
-#define CNORMAL  CGREY
-#define CMUTE    CDGREY
-#define CEDIT    CLGREEN
-#define CPLAYING CLRED
-#define CCOMMAND CLGREY
-#define CTITLE   CWHITE
-
-#define CHEADER CLBLUE|(CDBLUE<<4)
-
+void initcolorscheme(int dark);
 void printmainscreen(void);
 void displayupdate(void);
 void printstatus(void);

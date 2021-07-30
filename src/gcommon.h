@@ -62,6 +62,20 @@
 
 typedef struct
 {
+  unsigned char CBKGND;
+  unsigned char CNORMAL;
+  unsigned char CMUTE;
+  unsigned char CEDIT;
+  unsigned char CPLAYING;
+  unsigned char CCOMMAND;
+  unsigned char CTITLE;
+  unsigned char CHDRBG;
+  unsigned char CHDRFG;
+  unsigned char CHEADER;
+} COLORS;
+
+typedef struct
+{
   unsigned char ad;
   unsigned char sr;
   unsigned char ptr[MAX_TABLES];
