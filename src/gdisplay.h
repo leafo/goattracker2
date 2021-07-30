@@ -18,7 +18,7 @@
 #define CYELLOW 0xE
 #define CWHITE  0xF
 
-void initcolorscheme(void);
+void initcolorscheme(int dark);
 void printmainscreen(void);
 void displayupdate(void);
 void printstatus(void);

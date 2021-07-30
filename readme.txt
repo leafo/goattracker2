@@ -235,6 +235,7 @@ model 8580 and to load "dojo.sng" on startup.
 -W   Write emulated sound output to a file SIDAUDIO.RAW
 -?   Show command line options
 -??  Standalone online help window
+--dark   Use original dark colorscheme
 
 Try the command line options if there are any problems. For example, if you
 experience choppy audio you can increase audio buffering with -B option. SDL

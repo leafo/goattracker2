@@ -190,9 +190,6 @@ int main(int argc, char **argv)
       fprintf(STDOUT, "prg\n");
   }
 
-  // Init colorscheme
-  initcolorscheme();
-
   // Scan command line
   for (c = 3; c < argc; c++)
   {
@@ -326,6 +323,9 @@ int main(int argc, char **argv)
       exit(-1);
     }
   }
+
+  // Init colorscheme
+  initcolorscheme(1);
 
   // Validate parameters
   sidmodel &= 1;

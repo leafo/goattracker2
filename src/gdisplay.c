@@ -22,19 +22,19 @@ int timemin = 0;
 int timesec = 0;
 int timeframe = 0;
 
-void initcolorscheme(void)
+void initcolorscheme(int dark)
 {
-  colors.CBKGND   = CDBLUE;
+  colors.CBKGND   = dark ? CBLACK : CDBLUE;
 
-  colors.CNORMAL  = CLBLUE |(colors.CBKGND<<4);
+  colors.CNORMAL  = (dark ? CGREY : CLBLUE) |(colors.CBKGND<<4);
   colors.CMUTE    = CDGREY |(colors.CBKGND<<4);
   colors.CEDIT    = CLGREEN|(colors.CBKGND<<4);
   colors.CPLAYING = CLRED  |(colors.CBKGND<<4);
   colors.CCOMMAND = CLGREY |(colors.CBKGND<<4);
   colors.CTITLE   = CWHITE |(colors.CBKGND<<4);
 
-  colors.CHDRBG   = CLBLUE;
-  colors.CHDRFG   = CDBLUE;
+  colors.CHDRBG   = dark ? CDBLUE : CLBLUE;
+  colors.CHDRFG   = dark ? CWHITE : CDBLUE;
 
   colors.CHEADER  = colors.CHDRFG|(colors.CHDRBG<<4);
 }
