@@ -838,7 +838,7 @@ void mousecommands(void)
   }
 
   // Name editpos
-  if ((mousey >= 31) && (mousey <= 33) && (mousex >= 47+10))
+  if ((mousey >= 31) && (mousey <= 33) && (mousex >= 49+10))
   {
     editmode = EDIT_NAMES;
     enpos = mousey - 31;
