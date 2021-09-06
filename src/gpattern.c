@@ -140,7 +140,7 @@ void patterncommands(void)
     }
 
     if (newnote > LASTNOTE) newnote = -1;
-    if ((rawkey == 0x08) && (!epcolumn)) newnote = REST;
+    if ((rawkey == KEY_BACKSPACE) && (!epcolumn)) newnote = REST;
     if ((rawkey == 0x14) && (!epcolumn)) newnote = KEYOFF;
     if (rawkey == KEY_ENTER)
     {
