@@ -579,6 +579,7 @@ void playroutine(void)
                 if (!param)
                 {
                   cptr->freq = targetfreq;
+                  cptr->lastnote = cptr->note;
                   cptr->vibtime = 0;
                 }
                 else
@@ -596,6 +597,7 @@ void playroutine(void)
                     if (cptr->freq > targetfreq)
                     {
                       cptr->freq = targetfreq;
+                      cptr->lastnote = cptr->note;
                       cptr->vibtime = 0;
                     }
                   }
@@ -605,6 +607,7 @@ void playroutine(void)
                     if (cptr->freq < targetfreq)
                     {
                       cptr->freq = targetfreq;
+                      cptr->lastnote = cptr->note;
                       cptr->vibtime = 0;
                     }
                   }
@@ -807,6 +810,7 @@ void playroutine(void)
             if (!cptr->cmddata)
             {
               cptr->freq = targetfreq;
+              cptr->lastnote = cptr->note;
               cptr->vibtime = 0;
             }
             else
@@ -824,6 +828,7 @@ void playroutine(void)
                 if (cptr->freq > targetfreq)
                 {
                   cptr->freq = targetfreq;
+                  cptr->lastnote = cptr->note;
                   cptr->vibtime = 0;
                 }
               }
@@ -833,6 +838,7 @@ void playroutine(void)
                 if (cptr->freq < targetfreq)
                 {
                   cptr->freq = targetfreq;
+                  cptr->lastnote = cptr->note;
                   cptr->vibtime = 0;
                 }
               }
