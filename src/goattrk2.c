@@ -331,7 +331,7 @@ int main(int argc, char **argv)
         break;
 
         case 'X':
-        sscanf(&argv[c][2], "%u", &win_fullscreen);
+        sscanf(&argv[c][2], "%d", &win_fullscreen);
         break;
 
         case 'C':

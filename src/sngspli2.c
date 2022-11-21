@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
   if (argc >= 4)
   {
-    sscanf(argv[3], "%u", &targetlen);
+    sscanf(argv[3], "%d", &targetlen);
     if (targetlen < 1) targetlen = 1;
     if (targetlen > MAX_PATTROWS) targetlen = MAX_PATTROWS;
   }
