@@ -9,7 +9,7 @@ IF("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
 ENDIF()
 
 set(GOATTRK2_SOURCES
-    src/goatdata.c
+    ${CMAKE_CURRENT_BINARY_DIR}/goatdata.c
     src/goattrk2.c
     src/gsong.c
     src/gorder.c
@@ -65,7 +65,7 @@ endif(MINGW)
 # it would be nice not having to link things like resid, however the source is
 # not ready for that
 set(GT2RELOC_SOURCES
-    src/goatdata.c
+    ${CMAKE_CURRENT_BINARY_DIR}/goatdata.c
     src/gt2reloc.c
     src/gsong.c
     src/gorder.c
@@ -134,16 +134,14 @@ target_include_directories(datafile PUBLIC ${SDL2_INCLUDE_DIRS})
 
 add_custom_command(
   OUTPUT goattrk2.dat
-  COMMAND datafile goattrk2.dat goattrk2.seq
+  COMMAND datafile goattrk2.dat ${CMAKE_CURRENT_SOURCE_DIR}/src/goattrk2.seq
   DEPENDS datafile
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
   )
 
 add_custom_command(
-  OUTPUT ${CMAKE_SOURCE_DIR}/src/goatdata.c
+  OUTPUT goatdata.c
   COMMAND dat2inc goattrk2.dat goatdata.c
   DEPENDS dat2inc goattrk2.dat
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
   )
 
 add_executable(goattrk2 ${GOATTRK2_SOURCES})
@@ -160,8 +158,10 @@ if(MINGW)
     set(LIB_MINGW mingw32)
 endif()
 
-target_link_libraries(goattrk2 ${LIB_MINGW} SDL2::SDL2main)
-target_link_libraries(gt2reloc ${LIB_MINGW} SDL2::SDL2main)
+if(TARGET SDL2::SDL2main)
+    target_link_libraries(goattrk2 ${LIB_MINGW} SDL2::SDL2main)
+    target_link_libraries(gt2reloc ${LIB_MINGW} SDL2::SDL2main)
+endif()
 
 OPTION(STATIC "Static build" OFF)
 IF(STATIC)
