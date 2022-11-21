@@ -35,6 +35,7 @@ void initpaths(void)
 
 int fileselector(char *name, char *path, char *filter, char *title, int filemode)
 {
+  size_t i;
   int c, d, scrrep;
   int color;
   int files;
@@ -106,8 +107,8 @@ int fileselector(char *name, char *path, char *filter, char *title, int filemode
     char *filtptr = strstr(filter, "*");
     if (!filtptr) filtptr = filter;
     else filtptr++;
-    for (c = 0; c < strlen(filter); c++)
-      filter[c] = tolower(filter[c]);
+    for (i = 0; i < strlen(filter); i++)
+      filter[i] = tolower(filter[i]);
 
     while ((de = readdir(dir)))
     {
@@ -123,15 +124,14 @@ int fileselector(char *name, char *path, char *filter, char *title, int filemode
         }
         else
         {
-          int c;
           // If a file, must match filter
           strcpy(cmpbuf, de->d_name);
           if ((!strcmp(filtptr, "*")) || (!strcmp(filtptr, ".*")))
             files++;
           else
           {
-            for (c = 0; c < strlen(cmpbuf); c++)
-              cmpbuf[c] = tolower(cmpbuf[c]);
+            for (i = 0; i < strlen(cmpbuf); i++)
+              cmpbuf[i] = tolower(cmpbuf[i]);
             if (strstr(cmpbuf, filtptr))
               files++;
             else

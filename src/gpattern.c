@@ -71,6 +71,7 @@ void insertnote(int newnote) {
 
 void patterncommands(void)
 {
+  size_t i;
   int c, scrrep;
 
   switch(key)
@@ -94,45 +95,45 @@ void patterncommands(void)
       switch (keypreset)
       {
         case KEY_TRACKER:
-        for (c = 0; c < sizeof(notekeytbl1); c++)
+        for (i = 0; i < sizeof(notekeytbl1); i++)
         {
-          if ((rawkey == notekeytbl1[c]) && (!epcolumn) && (!shiftpressed))
+          if ((rawkey == notekeytbl1[i]) && (!epcolumn) && (!shiftpressed))
           {
-            newnote = FIRSTNOTE+c+epoctave*12;
+            newnote = FIRSTNOTE+i+epoctave*12;
           }
         }
-        for (c = 0; c < sizeof(notekeytbl2); c++)
+        for (i = 0; i < sizeof(notekeytbl2); i++)
         {
-          if ((rawkey == notekeytbl2[c]) && (!epcolumn) && (!shiftpressed))
+          if ((rawkey == notekeytbl2[i]) && (!epcolumn) && (!shiftpressed))
           {
-            newnote = FIRSTNOTE+c+(epoctave+1)*12;
+            newnote = FIRSTNOTE+i+(epoctave+1)*12;
           }
         }
         break;
 
         case KEY_DMC:
-        for (c = 0; c < sizeof(dmckeytbl); c++)
+        for (i = 0; i < sizeof(dmckeytbl); i++)
         {
-          if ((rawkey == dmckeytbl[c]) && (!epcolumn) && (!shiftpressed))
+          if ((rawkey == dmckeytbl[i]) && (!epcolumn) && (!shiftpressed))
           {
-            newnote = FIRSTNOTE+c+epoctave*12;
+            newnote = FIRSTNOTE+i+epoctave*12;
           }
         }
         break;
         
         case KEY_JANKO:
-        for (c = 0; c < sizeof(jankokeytbl1); c++)
+        for (i = 0; i < sizeof(jankokeytbl1); i++)
         {
-          if ((rawkey == jankokeytbl1[c]) && (!epcolumn) && (!shiftpressed))
+          if ((rawkey == jankokeytbl1[i]) && (!epcolumn) && (!shiftpressed))
           {
-            newnote = FIRSTNOTE+c+epoctave*12;
+            newnote = FIRSTNOTE+i+epoctave*12;
           }
         }
-        for (c = 0; c < sizeof(jankokeytbl2); c++)
+        for (i = 0; i < sizeof(jankokeytbl2); i++)
         {
-          if ((rawkey == jankokeytbl2[c]) && (!epcolumn) && (!shiftpressed))
+          if ((rawkey == jankokeytbl2[i]) && (!epcolumn) && (!shiftpressed))
           {
-            newnote = FIRSTNOTE+c+(epoctave+1)*12;
+            newnote = FIRSTNOTE+i+(epoctave+1)*12;
           }
         }
         break;

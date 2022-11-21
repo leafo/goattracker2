@@ -49,7 +49,7 @@ void io_setfilemode(int usedf)
 
 int io_openlinkeddatafile(unsigned char *ptr)
 {
-    int index;
+    unsigned index;
 
     if (datafilehandle) fclose(datafilehandle);
     datafilehandle = NULL;
@@ -86,7 +86,7 @@ int io_openlinkeddatafile(unsigned char *ptr)
 
 int io_opendatafile(char *name)
 {
-    int index;
+    unsigned index;
 
     if (name)
     {
@@ -155,8 +155,8 @@ int io_open(char *name)
     }
     else
     {
-        int index;
-        int namelength;
+        size_t  index;
+        size_t  namelength;
         char namecopy[13];
 
         namelength = strlen(name);

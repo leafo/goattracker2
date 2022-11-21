@@ -559,7 +559,8 @@ void sound_playrout(void)
 
 void sound_mixer(Sint32 *dest, unsigned samples)
 {
-  int s, c;
+  size_t s;
+  int c;
 
   if (!initted) return;
   if (samples > MIXBUFFERSIZE) return;

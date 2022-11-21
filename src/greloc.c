@@ -139,6 +139,9 @@ void relocator(void)
   int opt = 0;
   unsigned char speedcode[] = {0xa2,0x00,0x8e,0x04,0xdc,0xa2,0x00,0x8e,0x05,0xdc};
 
+#ifndef GT2RELOC
+  size_t i;
+#endif
   int c,d,e;
 
   unsigned char patttemp[512];
@@ -1528,10 +1531,10 @@ void relocator(void)
 
   // By default, copy loaded song name up to the extension
   memset(packedsongname, 0, sizeof packedsongname);
-  for (c = 0; c < strlen(loadedsongfilename); c++)
+  for (i = 0; i < strlen(loadedsongfilename); i++)
   {
-    if (loadedsongfilename[c] == '.') break;
-    packedsongname[c] = loadedsongfilename[c];
+    if (loadedsongfilename[i] == '.') break;
+    packedsongname[i] = loadedsongfilename[i];
   }
   switch (fileformat)
   {
