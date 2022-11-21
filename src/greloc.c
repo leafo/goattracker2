@@ -135,8 +135,10 @@ void relocator(void)
   int packedsize = 0;
 
   FILE *songhandle = NULL;
+#ifndef GT2RELOC
   int selectdone;
   int opt = 0;
+#endif
   unsigned char speedcode[] = {0xa2,0x00,0x8e,0x04,0xdc,0xa2,0x00,0x8e,0x05,0xdc};
 
 #ifndef GT2RELOC
