@@ -579,19 +579,19 @@ void InitHardDLL()
 {
   if (!(hardsiddll=LoadLibrary("HARDSID.DLL"))) return;
 
-  WriteToHardSID = (lpWriteToHardSID) GetProcAddress(hardsiddll, "WriteToHardSID");
-  ReadFromHardSID = (lpReadFromHardSID) GetProcAddress(hardsiddll, "ReadFromHardSID");
-  InitHardSID_Mapper = (lpInitHardSID_Mapper) GetProcAddress(hardsiddll, "InitHardSID_Mapper");
-  MuteHardSID_Line = (lpMuteHardSID_Line) GetProcAddress(hardsiddll, "MuteHardSID_Line");
+  WriteToHardSID     = (lpWriteToHardSID)     (void (*)(void)) GetProcAddress(hardsiddll, "WriteToHardSID");
+  ReadFromHardSID    = (lpReadFromHardSID)    (void (*)(void)) GetProcAddress(hardsiddll, "ReadFromHardSID");
+  InitHardSID_Mapper = (lpInitHardSID_Mapper) (void (*)(void)) GetProcAddress(hardsiddll, "InitHardSID_Mapper");
+  MuteHardSID_Line   = (lpMuteHardSID_Line)   (void (*)(void)) GetProcAddress(hardsiddll, "MuteHardSID_Line");
 
   if (!WriteToHardSID) return;
 
   // Try to get cycle-exact interface
-  HardSID_Delay = (lpHardSID_Delay) GetProcAddress(hardsiddll, "HardSID_Delay");
-  HardSID_Write = (lpHardSID_Write) GetProcAddress(hardsiddll, "HardSID_Write");
-  HardSID_Flush = (lpHardSID_Flush) GetProcAddress(hardsiddll, "HardSID_Flush");
-  HardSID_SoftFlush = (lpHardSID_SoftFlush) GetProcAddress(hardsiddll, "HardSID_SoftFlush");
-  HardSID_Lock = (lpHardSID_Lock) GetProcAddress(hardsiddll, "HardSID_Lock");
+  HardSID_Delay      = (lpHardSID_Delay)      (void (*)(void)) GetProcAddress(hardsiddll, "HardSID_Delay");
+  HardSID_Write      = (lpHardSID_Write)      (void (*)(void)) GetProcAddress(hardsiddll, "HardSID_Write");
+  HardSID_Flush      = (lpHardSID_Flush)      (void (*)(void)) GetProcAddress(hardsiddll, "HardSID_Flush");
+  HardSID_SoftFlush  = (lpHardSID_SoftFlush)  (void (*)(void)) GetProcAddress(hardsiddll, "HardSID_SoftFlush");
+  HardSID_Lock       = (lpHardSID_Lock)       (void (*)(void)) GetProcAddress(hardsiddll, "HardSID_Lock");
   if ((HardSID_Delay) && (HardSID_Write) && (HardSID_Flush) && (HardSID_SoftFlush) && (HardSID_Lock))
     cycleexacthardsid = TRUE;
 
