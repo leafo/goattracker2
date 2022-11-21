@@ -19,7 +19,7 @@ jobs:
         include:
           - generator: Ninja
             platform: Linux
-            os: ubuntu-latest
+            os: ubuntu-22.04
           - generator: Xcode
             platform: macOS
             os: macos-latest
