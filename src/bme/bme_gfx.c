@@ -533,7 +533,7 @@ void gfx_drawsprite(int x, int y, unsigned num)
     {
         int dec;
         cx = x;
-        dptr = gfx_screen->pixels + y * gfx_screen->pitch + x;
+        dptr = (Uint8*)gfx_screen->pixels + y * gfx_screen->pitch + x;
 
         for (;;)
         {
