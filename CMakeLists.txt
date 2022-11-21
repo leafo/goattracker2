@@ -3,6 +3,11 @@ project(goattracker2)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
+IF("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
+        "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+    add_compile_options("$<$<CONFIG:DEBUG>:-Wall;-Wextra;-pedantic>")
+ENDIF()
+
 set(GOATTRK2_SOURCES
     src/goatdata.c
     src/goattrk2.c
